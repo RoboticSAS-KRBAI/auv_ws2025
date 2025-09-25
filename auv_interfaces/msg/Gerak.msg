@@ -1,0 +1,4 @@
+float32 thruster1
+float32 thruster3
+float32 thruster2
+float32 thruster4

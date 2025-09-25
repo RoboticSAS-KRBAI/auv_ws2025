@@ -1,0 +1,4 @@
+string object_type
+int16 x_difference
+bool is_target
+int16 bounding_box_size
