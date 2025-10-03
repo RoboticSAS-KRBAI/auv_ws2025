@@ -126,45 +126,101 @@ class SubGuidance(Node):
             self.start_auv()
 
     def start_auv(self):
-        if self.is_in_range(0, 10):
-            self.get_logger().info("Go Depth")
-            self.pub_multi_pid.publish(self.multi_pid_msg)
-            self.pub_set_point.publish(self.set_point)
-            
-            status_msg = String()
-            status_msg.data = "dpr_ssy"
-            self.pub_status.publish(status_msg)
-            
-            boost_msg = Float32()
-            boost_msg.data = self.boost
-            self.pub_boost.publish(boost_msg)
-            
-        elif self.is_in_range(10, 15):
-            self.pid_yaw.kp = 10.0
-            self.pub_multi_pid.publish(self.multi_pid_msg)
-            self.get_logger().info("maju!!!")
-            
-            status_msg = String()
-            status_msg.data = "all"
-            self.pub_status.publish(status_msg)
         
-        elif self.is_in_range(15, 40):
-            self.set_point.yaw = -80.0
-            self.pub_set_point.publish(self.set_point)
-            self.get_logger().info("sway maju kanan!!!")
-            
-            status_msg = String()
-            status_msg.data = "sway_right_forward"
-            self.pub_status.publish(status_msg)
+        if self.is_in_range(0, 10):
+            if not self.has_published_dpr_ssy:
+                self.get_logger().info("Go Depth")
+                self.pub_multi_pid.publish(self.multi_pid_msg)
+                self.pub_set_point.publish(self.set_point)
+                
+                status_msg = String()
+                status_msg.data = "dpr_ssy"
+                self.pub_status.publish(status_msg)
+                
+                boost_msg = Float32()
+                boost_msg.data = self.boost
+                self.pub_boost.publish(boost_msg)
 
-        elif self.is_in_range(40, 41):
-            self.get_logger().info("stopppp")
-            self.set_point.depth = -0.75
+                self.has_published_dpr_ssy = True  # Set flag agar tidak dipublish lagi
+
+        elif self.is_in_range(10, 25): # cari objek n do something
+            if not self.has_published_forward:
+                self.pid_yaw.kp = 10.0
+                self.pub_multi_pid.publish(self.multi_pid_msg)
+                self.get_logger().info("maju!!!")
+                
+                status_msg = String()
+                # mungkin bisa inisialisasi di awal self.status_msg = String()
+                # (biar ga usah init berulang kali)
+
+                status_msg.data = "all"
+                self.pub_status.publish(status_msg)
+
+                self.has_published_forward = True  # Set flag agar tidak dipublish lagi
+
+            if self.object_class == "Orange_Flare":
+                if not self.has_published_sway:
+                    # self.set_point.yaw = -80.0
+                    # self.pub_set_point.publish(self.set_point)
+                    self.get_logger().info("sway kanan!!!")     # sway maju kanan!!!
+                    
+                    status_msg = String()
+                    status_msg.data = "sway_right"              # sway_right_forward
+                    self.pub_status.publish(status_msg)
+
+                    self.has_published_sway = True  # Set flag agar tidak dipublish lagi
+
+                if self.is_in_range(25, 27):
+                    if not self.has_published_stop:
+                        self.get_logger().info("stopppp")
+                        self.set_point.depth = -0.75
+                        
+                        status_msg = String()
+                        status_msg.data = "dpr_ssy"
+                        self.pub_status.publish(status_msg)
+                        self.has_published_stop = True  # Set flag agar tidak dipublish lagi
+
+        
+
+        # if self.is_in_range(0, 10):
+        #     self.get_logger().info("Go Depth")
+        #     self.pub_multi_pid.publish(self.multi_pid_msg)
+        #     self.pub_set_point.publish(self.set_point)
             
-            status_msg = String()
-            status_msg.data = "dpr_ssy"
-            self.pub_status.publish(status_msg)
-            self.has_published_stop = True  # Set flag agar tidak dipublish lagi
+        #     status_msg = String()
+        #     status_msg.data = "dpr_ssy"
+        #     self.pub_status.publish(status_msg)
+            
+        #     boost_msg = Float32()
+        #     boost_msg.data = self.boost
+        #     self.pub_boost.publish(boost_msg)
+            
+        # elif self.is_in_range(10, 15):
+        #     self.pid_yaw.kp = 10.0
+        #     self.pub_multi_pid.publish(self.multi_pid_msg)
+        #     self.get_logger().info("maju!!!")
+            
+        #     status_msg = String()
+        #     status_msg.data = "all"
+        #     self.pub_status.publish(status_msg)
+        
+        # elif self.is_in_range(15, 40):
+        #     self.set_point.yaw = -80.0
+        #     self.pub_set_point.publish(self.set_point)
+        #     self.get_logger().info("sway maju kanan!!!")
+            
+        #     status_msg = String()
+        #     status_msg.data = "sway_right_forward"
+        #     self.pub_status.publish(status_msg)
+
+        # elif self.is_in_range(40, 41):
+        #     self.get_logger().info("stopppp")
+        #     self.set_point.depth = -0.75
+            
+        #     status_msg = String()
+        #     status_msg.data = "dpr_ssy"
+        #     self.pub_status.publish(status_msg)
+        #     self.has_published_stop = True  # Set flag agar tidak dipublish lagi
 
 def main(args=None):
     rclpy.init(args=args)

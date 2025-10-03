@@ -36,8 +36,8 @@ class SubAccumulator(Node):
 
         
         for bbox in data.bounding_boxes:
-            # self.get_logger().info("Class: %s, Probability: %.2f, Coordinates: (%d, %d), (%d, %d)",
-            #             bbox.class_name, bbox.probability, bbox.x_min, bbox.y_min, bbox.x_max, bbox.y_max)
+            self.get_logger().info("Class: %s, Probability: %.2f, Coordinates: (%d, %d), (%d, %d)",
+                        bbox.class_name, bbox.probability, bbox.x_min, bbox.y_min, bbox.x_max, bbox.y_max)
             
             # Calculate the center x-coordinate of the bounding box
             center_x = (bbox.x_min + bbox.x_max) // 2
