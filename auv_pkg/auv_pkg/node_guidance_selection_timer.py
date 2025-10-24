@@ -22,12 +22,28 @@ class SubGuidance(Node):
         self.boost = 0.0
         self.object_class = ""
 
+        status_msg = String()
+
         # Tambahkan flag untuk melacak publikasi status
         self.has_published_dpr_ssy = False
         self.has_published_forward = False
         self.has_published_sway = False
         self.has_published_back = False
         self.has_published_stop = False
+
+        #locking Obstacle
+        self.orange_flare_locking = False
+        self.orange_flare_lock_start = 0
+        self.orange_flare_elapsed = 0
+
+        self.gate_locking = False
+        self.gate_lock_start = 0
+        self.gate_elapsed = 0
+
+        #SAUVC Obstacle
+        self.has_dodged_flare = False
+        self.has_entered_gate = False
+        self.has_dropped_ball = False
 
         self.set_point = SetPoint()
         self.multi_pid_msg = MultiPID()
@@ -143,42 +159,41 @@ class SubGuidance(Node):
 
                 self.has_published_dpr_ssy = True  # Set flag agar tidak dipublish lagi
 
-        elif self.is_in_range(10, 25): # cari objek n do something
+        elif self.is_in_range(10, 30): # cari objek n do something
             if not self.has_published_forward:
                 self.pid_yaw.kp = 10.0
                 self.pub_multi_pid.publish(self.multi_pid_msg)
                 self.get_logger().info("maju!!!")
-                
-                status_msg = String()
-                # mungkin bisa inisialisasi di awal self.status_msg = String()
-                # (biar ga usah init berulang kali)
 
                 status_msg.data = "all"
                 self.pub_status.publish(status_msg)
 
                 self.has_published_forward = True  # Set flag agar tidak dipublish lagi
 
-            if (self.object_class == "Orange_Flare"):
-                if not self.has_published_sway:
+            if not self.has_published_sway:
+                if (self.object_class == "Orange_Flare") and self.is_in_range(15, 30):
                     # self.set_point.yaw = -80.0
                     # self.pub_set_point.publish(self.set_point)
                     self.get_logger().info("sway kanan!!!")     # sway maju kanan!!!
-                    
-                    status_msg = String()
                     status_msg.data = "sway_right_forward"              # sway_right_forward
                     self.pub_status.publish(status_msg)
 
                     self.has_published_sway = True  # Set flag agar tidak dipublish lagi
+            elif not self.has_entered_gate: # next AUV => gate
+                if (self.object_class == "Gate") and self.is_in_range(20, 30):
+                    self.get_logger().info("masuk gate!!!")
+                    status_msg.data = "all"
+                    self.pub_status.publish(status_msg)
+                    self.has_entered_gate = True
+                
+        elif self.is_in_range(30, 33):
+            if not self.has_published_stop:
+                self.get_logger().info("stopppp")
+                self.set_point.depth = -0.75
 
-                if self.is_in_range(25, 27):
-                    if not self.has_published_stop:
-                        self.get_logger().info("stopppp")
-                        self.set_point.depth = -0.75
-                        
-                        status_msg = String()
-                        status_msg.data = "dpr_ssy"
-                        self.pub_status.publish(status_msg)
-                        self.has_published_stop = True  # Set flag agar tidak dipublish lagi
+                status_msg.data = "dpr_ssy"
+                self.pub_status.publish(status_msg)
+                self.has_published_stop = True  # Set flag agar tidak dipublish lagi
 
         
 

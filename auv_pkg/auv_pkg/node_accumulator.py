@@ -36,8 +36,8 @@ class SubAccumulator(Node):
 
         
         for bbox in data.bounding_boxes:
-            self.get_logger().info("Class: %s, Probability: %.2f, Coordinates: (%d, %d), (%d, %d)",
-                        bbox.class_name, bbox.probability, bbox.x_min, bbox.y_min, bbox.x_max, bbox.y_max)
+            # self.get_logger().info("Class: %s, Probability: %.2f, Coordinates: (%d, %d), (%d, %d)",
+            #             bbox.class_name, bbox.probability, bbox.x_min, bbox.y_min, bbox.x_max, bbox.y_max)
             
             # Calculate the center x-coordinate of the bounding box
             center_x = (bbox.x_min + bbox.x_max) // 2
@@ -48,12 +48,12 @@ class SubAccumulator(Node):
             if bbox.class_name == "Orange_Flare":
                 self.object_difference.object_type = bbox.class_name
                 self.object_difference.x_difference = x_difference
-            # if bbox.class_name == "Gate":
-            #     self.object_difference.object_type = bbox.class_name
-            #     self.object_difference.x_difference = x_difference
-            # if bbox.class_name == "Bucket":
-            #     self.object_difference.object_type = bbox.class_name
-            #     self.object_difference.x_difference = x_difference
+            if bbox.class_name == "Gate":
+                self.object_difference.object_type = bbox.class_name
+                self.object_difference.x_difference = x_difference
+            if bbox.class_name == "Bucket":
+                self.object_difference.object_type = bbox.class_name
+                self.object_difference.x_difference = x_difference
                 
             # self.get_logger().info("Center x-coordinate of bounding box: %d", center_x)
             # self.get_logger().info("Pixel difference between bounding box center and frame center: %d", x_difference)
