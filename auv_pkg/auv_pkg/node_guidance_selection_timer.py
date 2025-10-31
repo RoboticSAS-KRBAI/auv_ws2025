@@ -8,7 +8,7 @@ from auv_interfaces.msg import SetPoint, MultiPID, PID, ObjectDifference
 class SubGuidance(Node):
 
     def __init__(self):
-        super().__init__('guidance_teensy')
+        super().__init__('guidance_teensy') # bebas mau copy n paste codenya aja atau tambahin file ke robot, kalo tambah file ganti jd 'guidance_selection_timer' terus setup.py tambah di entry_points console_scripts juga
 
         self.is_start = False
         self.start_time_flag = 0  # Mengganti nama self.start untuk menghindari konflik
@@ -143,7 +143,7 @@ class SubGuidance(Node):
 
     def start_auv(self):
         
-        if self.is_in_range(0, 10):
+        if self.is_in_range(0, 5):
             if not self.has_published_dpr_ssy:
                 self.get_logger().info("Go Depth")
                 self.pub_multi_pid.publish(self.multi_pid_msg)
@@ -152,41 +152,19 @@ class SubGuidance(Node):
                 status_msg = String()
                 status_msg.data = "dpr_ssy"
                 self.pub_status.publish(status_msg)
-                
-                boost_msg = Float32()
-                boost_msg.data = self.boost
-                self.pub_boost.publish(boost_msg)
 
                 self.has_published_dpr_ssy = True  # Set flag agar tidak dipublish lagi
 
-        elif self.is_in_range(10, 30): # cari objek n do something
+        elif self.is_in_range(5, 15): # cari objek n do something
             if not self.has_published_forward:
-                self.pid_yaw.kp = 10.0
-                self.pub_multi_pid.publish(self.multi_pid_msg)
                 self.get_logger().info("maju!!!")
 
                 status_msg.data = "all"
                 self.pub_status.publish(status_msg)
 
                 self.has_published_forward = True  # Set flag agar tidak dipublish lagi
-
-            if not self.has_published_sway:
-                if (self.object_class == "Orange_Flare") and self.is_in_range(15, 30):
-                    # self.set_point.yaw = -80.0
-                    # self.pub_set_point.publish(self.set_point)
-                    self.get_logger().info("sway kanan!!!")     # sway maju kanan!!!
-                    status_msg.data = "sway_right_forward"              # sway_right_forward
-                    self.pub_status.publish(status_msg)
-
-                    self.has_published_sway = True  # Set flag agar tidak dipublish lagi
-            elif not self.has_entered_gate: # next AUV => gate
-                if (self.object_class == "Gate") and self.is_in_range(20, 30):
-                    self.get_logger().info("masuk gate!!!")
-                    status_msg.data = "all"
-                    self.pub_status.publish(status_msg)
-                    self.has_entered_gate = True
                 
-        elif self.is_in_range(30, 33):
+        elif self.is_in_range(15, 17):
             if not self.has_published_stop:
                 self.get_logger().info("stopppp")
                 self.set_point.depth = -0.75
@@ -196,6 +174,85 @@ class SubGuidance(Node):
                 self.has_published_stop = True  # Set flag agar tidak dipublish lagi
 
         
+
+        
+
+def main(args=None):
+    rclpy.init(args=args)
+    
+    node = SubGuidance()
+
+    # Create a timer for the main loop
+    timer_period = 0.1  # 10 Hz
+    timer = node.create_timer(timer_period, node.start)
+    
+    rclpy.spin(node)
+    
+    # Cleanup
+    node.destroy_node()
+    rclpy.shutdown()
+
+if __name__ == "__main__":
+    main()
+
+
+
+
+### 31 okt 2025 ###
+
+        # if self.is_in_range(0, 5):
+        #     if not self.has_published_dpr_ssy:
+        #         self.get_logger().info("Go Depth")
+        #         self.pub_multi_pid.publish(self.multi_pid_msg)
+        #         self.pub_set_point.publish(self.set_point)
+         
+        #         status_msg.data = "dpr_ssy"
+        #         self.pub_status.publish(status_msg)
+                
+        #         boost_msg = Float32()
+        #         boost_msg.data = self.boost
+        #         self.pub_boost.publish(boost_msg)
+
+        #         self.has_published_dpr_ssy = True  # Set flag agar tidak dipublish lagi
+
+        # elif self.is_in_range(5, 30): # cari objek n do something
+        #     if not self.has_published_forward:
+        #         #self.pid_yaw.kp = 10.0
+        #         #self.pub_multi_pid.publish(self.multi_pid_msg)
+        #         self.get_logger().info("maju!!!")
+
+        #         status_msg.data = "all"
+        #         self.pub_status.publish(status_msg)
+
+        #         self.has_published_forward = True  # Set flag agar tidak dipublish lagi
+
+        #     if not self.has_published_sway:
+        #         if (self.object_class == "Orange_Flare") and self.is_in_range(15, 30):
+        #             # self.set_point.yaw = -80.0
+        #             # self.pub_set_point.publish(self.set_point)
+        #             self.get_logger().info("sway kanan!!!")     # sway maju kanan!!!
+        #             status_msg.data = "sway_right_forward"              # sway_right_forward
+        #             self.pub_status.publish(status_msg)
+        #             self.has_published_sway = True  # Set flag agar tidak dipublish lagi
+        #     elif not self.has_entered_gate: # next AUV => gate
+        #         if (self.object_class == "Gate") and self.is_in_range(20, 30):
+        #             self.get_logger().info("masuk gate!!!")
+        #             status_msg.data = "all"
+        #             self.pub_status.publish(status_msg)
+        #             self.has_entered_gate = True
+                
+        # elif self.is_in_range(30, 33):
+        #     if not self.has_published_stop:
+        #         self.get_logger().info("stopppp")
+        #         self.set_point.depth = -0.75
+
+        #         status_msg.data = "dpr_ssy"
+        #         self.pub_status.publish(status_msg)
+        #         self.has_published_stop = True  # Set flag agar tidak dipublish lagi
+
+
+### (entah kapan) ###
+
 
         # if self.is_in_range(0, 10):
         #     self.get_logger().info("Go Depth")
@@ -236,22 +293,3 @@ class SubGuidance(Node):
         #     status_msg.data = "dpr_ssy"
         #     self.pub_status.publish(status_msg)
         #     self.has_published_stop = True  # Set flag agar tidak dipublish lagi
-
-def main(args=None):
-    rclpy.init(args=args)
-    
-    node = SubGuidance()
-
-    # Create a timer for the main loop
-    timer_period = 0.1  # 10 Hz
-    timer = node.create_timer(timer_period, node.start)
-    
-    rclpy.spin(node)
-    
-    # Cleanup
-    node.destroy_node()
-    rclpy.shutdown()
-
-if __name__ == "__main__":
-    main()
-

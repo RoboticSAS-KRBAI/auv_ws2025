@@ -279,7 +279,7 @@ class SubGuidance(Node):
         elif self.is_in_range(50, 52):
                 self.surface()
 
-        # mungkin cari cara lain selain pake timer(?) mungkin buat kondisi surfacing kalau semua task udah kelar atau kalau waktu udh lewat batas berapa detik dan ga ngedetect object selama beberapa detik
+        # mungkin cari cara lain selain pake timer(?) mungkin buat kondisi surfacing kalau "semua task udah kelar" atau "kalau waktu udh lewat batas berapa detik dan ga ngedetect object selama beberapa detik"
 
 # ------------------------------- EXCECUTE ACTIONS ------------------------------- #
 # ------------------------------- ---------------- ------------------------------- #
