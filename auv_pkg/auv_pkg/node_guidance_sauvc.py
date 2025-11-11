@@ -22,8 +22,6 @@ class SubGuidance(Node):
         self.boost = 0.0
         self.object_class = ""
 
-        status_msg = String()
-
         # Tambahkan flag untuk melacak publikasi status
         self.has_published_dpr_ssy = False
         self.has_published_forward = False
@@ -250,9 +248,12 @@ class SubGuidance(Node):
 
     def start_auv(self):
         
+        status_msg = String()
+
         if self.is_in_range(0, 10):
             if not self.has_published_dpr_ssy:
                 self.get_logger().info("Go Depth")
+                self.pid_yaw.kp = 10.0
                 self.pub_multi_pid.publish(self.multi_pid_msg)
                 self.pub_set_point.publish(self.set_point)
                 

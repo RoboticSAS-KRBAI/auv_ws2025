@@ -22,8 +22,6 @@ class SubGuidance(Node):
         self.boost = 0.0
         self.object_class = ""
 
-        status_msg = String()
-
         # Tambahkan flag untuk melacak publikasi status
         self.has_published_dpr_ssy = False
         self.has_published_forward = False
@@ -142,6 +140,8 @@ class SubGuidance(Node):
             self.start_auv()
 
     def start_auv(self):
+
+        status_msg = String()
         
         if self.is_in_range(0, 5):
             if not self.has_published_dpr_ssy:
