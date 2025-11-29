@@ -2,41 +2,141 @@
 
 import sys
 import threading
-from PyQt5 import QtWidgets
-from .gui_guidance import Ui_MainWindow  # hasil dari pyuic5
+from PyQt5 import QtWidgets, QtCore
+from .AUV_GUI import Ui_MainWindow  # hasil dari pyuic5
 
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import String
-from auv_interfaces.msg import MultiPID, SetPoint
+from auv_interfaces.msg import MultiPID, SetPoint, Sensor, PID, MultiPID, SetPoint
+from std_msgs.msg import String, Float32
 
+# class GuiSignals(QtCore.QObject):
+#     sensor_update = QtCore.pyqtSignal(object)
 
 class GuidanceGUI(Node):
     def __init__(self, ui):
         super().__init__('gui_guidance')
         self.ui = ui
+        # self.signals = GuiSignals()
+        
+        # self.signals.sensor_update.connect(self.update_sensor_gui)
 
         # Subscriptions
-        self.sub_pid = self.create_subscription(MultiPID, 'pid', self.pid_callback, 10)
+        # self.sub_pid = self.create_subscription(MultiPID, 'pid', self.pid_callback, 10)
         self.sub_setpoint = self.create_subscription(SetPoint, 'set_point', self.setpoint_callback, 10)
         self.sub_status = self.create_subscription(String, 'status', self.status_callback, 10)
 
-    def pid_callback(self, msg):
-        # self.ui.lblYaw.setText(f"Yaw KP: {msg.pid_yaw.kp:.2f}")
-        self.ui.lblYaw.setText(f"Yaw KP: {msg.pid_yaw.kp:.2f}" if msg.pid_yaw.kp is not None else "Yaw KP: None")
-        self.ui.lblPitch.setText(f"Pitch KP: {msg.pid_pitch.kp:.2f}")
-        self.ui.lblRoll.setText(f"Roll KP: {msg.pid_roll.kp:.2f}")
-        self.ui.lblDepth.setText(f"Depth KP: {msg.pid_depth.kp:.2f}")
+        # Publisher
+        pub_multi_pid = self.create_publisher(MultiPID, 'pid', 10)
+        pub_set_point = self.create_publisher(SetPoint, 'set_point', 10)
+        pub_status = self.create_publisher(String, 'status', 10)
+        pub_boost = self.create_publisher(Float32, 'boost', 10)
 
-    def setpoint_callback(self, msg):
-        self.ui.lblSetpoint.setText(f"Yaw: {msg.yaw:.2f}, Depth: {msg.depth:.2f}")
+        self.ui.pushButton.clicked.connect(self.publish_values)
+
+        self.get_logger().info("GUI ROS2 Node Started with Publishers")
+    
+    def publish_values(self):
+
+        try:
+            yaw = float(self.ui.setYaw.text())
+            pitch = float(self.ui.setPitch.text())
+            roll = float(self.ui.setRoll.text())
+            depth = float(self.ui.setDepth.text())
+        except:
+            print("ERROR: Input tidak valid")
+            return
+
+        # -------- PID values (bisa kamu ubah) ----------
+        pid_yaw = PID()
+        pid_yaw.kp = 10.0
+        pid_yaw.ki = 0.0
+        pid_yaw.kd = 0.0
+
+        pid_pitch = PID()
+        pid_pitch.kp = 4000.0
+        pid_pitch.ki = 0.0
+        pid_pitch.kd = 0.0
+
+        pid_roll = PID()
+        pid_roll.kp = 500.0
+        pid_roll.ki = 0.0
+        pid_roll.kd = 0.0
+
+        pid_depth = PID()
+        pid_depth.kp = 3000.0
+        pid_depth.ki = 0.0
+        pid_depth.kd = 0.0
+
+        multi_pid_msg = MultiPID()
+        multi_pid_msg.pid_yaw = pid_yaw
+        multi_pid_msg.pid_pitch = pid_pitch
+        multi_pid_msg.pid_roll = pid_roll
+        multi_pid_msg.pid_depth = pid_depth
+
+        # -------- SetPoint message ----------
+        set_point = SetPoint()
+        set_point.yaw = yaw
+        set_point.pitch = pitch
+        set_point.roll = roll
+        set_point.depth = depth
+
+        # -------- Status ----------
+        status = String()
+        status.data = "yaw"
+
+        # -------- Boost ----------
+        boost = Float32()
+        boost.data = 0.0
+
+        # -------- Publish ----------
+        self.pub_status.publish(status)
+        self.pub_multi_pid.publish(multi_pid_msg)
+        self.pub_setpoint.publish(set_point)
+        self.pub_boost.publish(boost)
+
+        print("====== PUBLISH SUCCESS ======")
+        print("Yaw:", yaw)
+        print("Pitch:", pitch)
+        print("Roll:", roll)
+        print("Depth:", depth)
+        print("================================")
+
+    # def pid_callback(self, msg):
+        # self.ui.lblYaw.setText(f"Yaw KP: {msg.pid_yaw.kp:.2f}")
+        # self.ui.lblYaw.setText(f"Yaw KP: {msg.pid_yaw.kp:.2f}" if msg.pid_yaw.kp is not None else "Yaw KP: None")
+        # self.ui.lblPitch.setText(f"Pitch KP: {msg.pid_pitch.kp:.2f}")
+        # self.ui.lblRoll.setText(f"Roll KP: {msg.pid_roll.kp:.2f}")
+        # self.ui.lblDepth.setText(f"Depth KP: {msg.pid_depth.kp:.2f}")
+        # self.ui.yawValue.setText(f"{msg.pid_yaw.kp:.2f}")
+        # self.ui.pitchValue.setText(f"{msg.pid_pitch.kp:.2f}")
+        # self.ui.rollValue.setText(f"{msg.pid_roll.kp:.2f}")
+        # self.ui.depthValue.setText(f"{msg.pid_depth.kp:.2f}")
 
     def status_callback(self, msg):
-        self.ui.lblStatus.setText(f"Status: {msg.data}")
+        self.ui.Status.setText(msg.data)
+
+    def setpoint_callback(self, msg):
+        # self.ui.lblSetpoint.setText(f"Yaw: {msg.yaw:.2f}, Depth: {msg.depth:.2f}")
+        self.ui.yawSetPoint.setText(f"{msg.yaw:.2f}°")
+        self.ui.depthSetPoint.setText(f"{msg.depth:.2f}")
+        self.ui.pitchSetPoint.setText(f"{msg.pitch:.2f}")
+        self.ui.rollSetPoint.setText(f"{msg.roll:.2f}")
+
+    
+    def update_sensor_gui(self, msg):
+        # ini aman karena berjalan di thread GUI
+        self.ui.lblYawValue.setText(f"{msg.yaw:.2f}")
+        self.ui.lblPitchValue.setText(f"{msg.pitch:.2f}")
+        self.ui.lblRollValue.setText(f"{msg.roll:.2f}")
+        self.ui.lblDepthValue.setText(f"{msg.depth:.2f}")
+
+
+    # def status_callback(self, msg):
+    #     self.ui.lblStatus.setText(f"Status: {msg.data}")
 
 
 def ros_spin(node):
-    """Jalankan ROS2 di thread terpisah supaya GUI tidak nge-freeze"""
     rclpy.spin(node)
     node.destroy_node()
     rclpy.shutdown()
