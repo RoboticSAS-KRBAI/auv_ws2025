@@ -3,6 +3,7 @@
 import sys
 import threading
 from PyQt5 import QtWidgets, QtCore
+from PyQt5.QtGui import QPixmap, QTransform, QPainter
 from .AUV_GUI import Ui_MainWindow  # hasil dari pyuic5
 
 import rclpy
@@ -11,7 +12,7 @@ from auv_interfaces.msg import MultiPID, SetPoint, Sensor, PID, MultiPID, SetPoi
 from std_msgs.msg import String, Float32
 
 # class GuiSignals(QtCore.QObject):
-#     sensor_update = QtCore.pyqtSignal(object)
+#     sensor_update = QtCore.pyqtS[" was not closedPylanceignal(object)
 
 class GuidanceGUI(Node):
     def __init__(self, ui):
@@ -21,9 +22,26 @@ class GuidanceGUI(Node):
         
         # self.signals.sensor_update.connect(self.update_sensor_gui)
 
+        #yaw_dot
+
+        self.dot_pixmap = QPixmap("/home/reynard/Documents/clone_auv_ws/auv_pkg/auv_pkg/gui/dot1.png").scaled(
+            390, 390,
+            QtCore.Qt.KeepAspectRatio,
+            QtCore.Qt.SmoothTransformation
+        )
+
+        self.ui.labeldot.setScaledContents(False)
+
+        self.ui.labeldot.setPixmap(self.dot_pixmap)
+
+        self.rotate_timer = QtCore.QTimer()
+        # self.rotate_timer.timeout.connect(self.updateYaw)
+        self.rotate_timer.start(50)
+
+
         # Subscriptions
         # self.sub_pid = self.create_subscription(MultiPID, 'pid', self.pid_callback, 10)
-        self.sub_setpoint = self.create_subscription(SetPoint, 'set_point_msg', self.setpoint_callback, 10)
+        self.sub_setpoint = self.create_subscription(SetPoint, 'set_point', self.setpoint_callback, 10)
         self.sub_status = self.create_subscription(String, 'status_msg', self.status_callback, 10)
         self.sub_status_setpoint = self.create_subscription(String, 'status', self.status_setpoint_callback, 10)
         self.sub_sensor = self.create_subscription(Sensor, 'sensor_msg', self.sensor_callback, 10)
@@ -42,10 +60,11 @@ class GuidanceGUI(Node):
     def publish_values(self):
 
         try:
+            statusText = self.ui.comboBoxStatus.currentText()
             yaw = float(self.ui.setYaw.text())
+            depth = float(self.ui.setDepth.text())
             pitch = float(self.ui.setPitch.text())
             roll = float(self.ui.setRoll.text())
-            depth = float(self.ui.setDepth.text())
         except:
             print("ERROR: Input tidak valid")
             return
@@ -86,7 +105,8 @@ class GuidanceGUI(Node):
 
         # -------- Status ----------
         status = String()
-        status.data = "yaw"
+        status.data = statusText
+
 
         # -------- Boost ----------
         boost = Float32()
@@ -105,16 +125,16 @@ class GuidanceGUI(Node):
         print("Depth:", depth)
         print("================================")
 
-    # def pid_callback(self, msg):
-        # self.ui.lblYaw.setText(f"Yaw KP: {msg.pid_yaw.kp:.2f}")
-        # self.ui.lblYaw.setText(f"Yaw KP: {msg.pid_yaw.kp:.2f}" if msg.pid_yaw.kp is not None else "Yaw KP: None")
-        # self.ui.lblPitch.setText(f"Pitch KP: {msg.pid_pitch.kp:.2f}")
-        # self.ui.lblRoll.setText(f"Roll KP: {msg.pid_roll.kp:.2f}")
-        # self.ui.lblDepth.setText(f"Depth KP: {msg.pid_depth.kp:.2f}")
-        # self.ui.yawValue.setText(f"{msg.pid_yaw.kp:.2f}")
-        # self.ui.pitchValue.setText(f"{msg.pid_pitch.kp:.2f}")
-        # self.ui.rollValue.setText(f"{msg.pid_roll.kp:.2f}")
-        # self.ui.depthValue.setText(f"{msg.pid_depth.kp:.2f}")
+        self.ui.setYaw.setText("")
+    
+    def updateYaw(self, yaw):
+        angle = yaw
+
+        transform = QTransform().rotate(angle)
+        rotated = self.dot_pixmap.transformed(transform, QtCore.Qt.SmoothTransformation)
+
+        self.ui.labeldot.setPixmap(rotated)
+
 
     def status_callback(self, msg):
         self.ui.Status.setText(msg.data)
@@ -128,12 +148,16 @@ class GuidanceGUI(Node):
         self.ui.Pitch.setText(f"{msg.pitch:.2f}")
         self.ui.Roll.setText(f"{msg.roll:.2f}")
 
+
     def setpoint_callback(self, msg):
         # self.ui.lblSetpoint.setText(f"Yaw: {msg.yaw:.2f}, Depth: {msg.depth:.2f}")
         self.ui.yawSetPoint.setText(f"{msg.yaw:.2f}°")
         self.ui.depthSetPoint.setText(f"{msg.depth:.2f}")
         self.ui.pitchSetPoint.setText(f"{msg.pitch:.2f}")
         self.ui.rollSetPoint.setText(f"{msg.roll:.2f}")
+        # self.ui.graphicsViewdot.rotate(round(msg.yaw, 0))
+        yaw_angle = round(msg.yaw, 0)
+        self.updateYaw(yaw_angle)
 
     
     # def update_sensor_gui(self, msg):
