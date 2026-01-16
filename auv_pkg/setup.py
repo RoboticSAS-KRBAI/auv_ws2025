@@ -25,6 +25,8 @@ setup(
             "guidance_teensy = auv_pkg.node_guidance_teensy:main",
             'object_detection = auv_pkg.node_object_detection:main',
             "pub_teensy = auv_pkg.publisher_teensy:main",
+            "tes_gui = auv_pkg.gui.gui_node:main",
+            "tes_gui_v2 = auv_pkg.gui.tes_gui_v2:main",
         ],
     },
 )
