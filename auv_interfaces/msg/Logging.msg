@@ -1,0 +1,5 @@
+string pesan_flag1
+string pesan_flag2
+string pesan_flag3
+string pesan_flag4
+string pesan_flag5

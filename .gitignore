@@ -1,0 +1,27 @@
+# ===== Video =====
+*.mp4
+
+# ===== Dataset =====
+datasets/
+data/
+*.zip
+*.tar
+*.tar.gz
+
+# ===== Log & output =====
+logs/
+runs/
+outputs/
+
+# ===== Cache =====
+__pycache__/
+*.pyc
+
+# ===== ROS / build =====
+build/
+install/
+log/
+
+# ===== System =====
+.DS_Store
+*.swp
