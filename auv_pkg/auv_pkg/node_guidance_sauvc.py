@@ -130,6 +130,7 @@ class SubGuidance(Node):
 # ------------------------------- OBJECTIONS ------------------------------- #
 
     def dodge_flare(self):
+        status_msg = String()
         status_msg.data = "camera"
         self.pub_status.publish(status_msg)
 
@@ -161,6 +162,7 @@ class SubGuidance(Node):
             self.orange_flare_locking = False
 
     def enter_gate(self):
+        status_msg = String()
         status_msg.data = "camera_yaw"
         self.pub_status.publish(status_msg)
         if (self.object_class == "Gate"):
@@ -191,6 +193,7 @@ class SubGuidance(Node):
             self.gate_locking = False
 
     def drop_ball(self):
+        status_msg = String()
         status_msg.data = "camera_yaw"
         self.pub_status.publish(status_msg)
 
