@@ -31,10 +31,10 @@ class SubGuidance(Node):
 
         self.set_point = SetPoint()
         self.multi_pid_msg = MultiPID()
+        self.set_point.yaw =  264.0
+        self.set_point.pitch = 0.03
         self.set_point.roll = 0.0
-        self.set_point.pitch = 0.0 
-        self.set_point.yaw =  85.0 #84 #82
-        self.set_point.depth = -0.52
+        self.set_point.depth = 0.05
 
         self.param_delay = 3
         self.param_duration = 0
@@ -56,27 +56,27 @@ class SubGuidance(Node):
 
         # Create multiple PID messages
         self.pid_yaw = PID()
-        self.pid_yaw.kp = 15.0    # Proportional constant for yaw
+        self.pid_yaw.kp = 3.0   #15 # Proportional constant for yaw
         self.pid_yaw.ki = 0.0   # Integral constant for yaw
         self.pid_yaw.kd = 0.0   # Derivative constant for yaw
 
         self.pid_pitch = PID()
-        self.pid_pitch.kp = 4500.0    # Proportional constant for pitch 
+        self.pid_pitch.kp = 700.0  #4500  # Proportional constant for pitch 
         self.pid_pitch.ki = 0.0          # Integral constant for pitch
         self.pid_pitch.kd = 0.0    # Derivative constant for pitch
 
         self.pid_roll = PID()
-        self.pid_roll.kp = 700.0   # Proportional constant for roll
+        self.pid_roll.kp = 300.0  #700 # Proportional constant for roll
         self.pid_roll.ki = 0.0     # Integral constant for roll
         self.pid_roll.kd = 0.0     # Derivative constant for roll
 
         self.pid_depth = PID()
-        self.pid_depth.kp = 3000.0    # Proportional constant for depth
+        self.pid_depth.kp = 1500.0  #3000  # Proportional constant for depth
         self.pid_depth.ki = 0.0     # Integral constant for depth
         self.pid_depth.kd = 0.0     # Derivative constant for depth
 
         self.pid_camera = PID()
-        self.pid_camera.kp = 1.0       # Proportional constant for camera
+        self.pid_camera.kp = 0.5    #1.0   # Proportional constant for camera
         self.pid_camera.ki = 0.0     # Integral constant for camera
         self.pid_camera.kd = 0.0     # Derivative constant for camera
 
@@ -127,9 +127,9 @@ class SubGuidance(Node):
 
     def start_auv(self):
         
-        if self.is_in_range(0, 10):
+        if self.is_in_range(0, 4):
             if not self.has_published_dpr_ssy:
-                self.get_logger().info("Go Depth")
+                self.get_logger().info("maju")
                 self.pub_multi_pid.publish(self.multi_pid_msg)
                 self.pub_set_point.publish(self.set_point)
                 
@@ -143,42 +143,54 @@ class SubGuidance(Node):
 
                 self.has_published_dpr_ssy = True  # Set flag agar tidak dipublish lagi
 
-        elif self.is_in_range(10, 25): # cari objek n do something
+        elif self.is_in_range(4, 10): # cari objek n do something
             if not self.has_published_forward:
-                self.pid_yaw.kp = 10.0
+                self.pid_yaw.kp = 3.0
                 self.pub_multi_pid.publish(self.multi_pid_msg)
                 self.get_logger().info("maju!!!")
                 
                 status_msg = String()
-                # mungkin bisa inisialisasi di awal self.status_msg = String()
+                # mungkin bisa inisialisasi di awal self.s  tatus_msg = String()
                 # (biar ga usah init berulang kali)
 
                 status_msg.data = "all"
                 self.pub_status.publish(status_msg)
 
                 self.has_published_forward = True  # Set flag agar tidak dipublish lagi
+        elif self.is_in_range(10, 12): # cari objek n do something
+            if not self.has_published_stop:
+                self.pid_yaw.kp = 3.0
+                self.pub_multi_pid.publish(self.multi_pid_msg)
+                self.get_logger().info("stop!!!")
+                
+                status_msg = String()
 
-            if (self.object_class == "Orange_Flare"):
-                if not self.has_published_sway:
-                    # self.set_point.yaw = -80.0
-                    # self.pub_set_point.publish(self.set_point)
-                    self.get_logger().info("sway kanan!!!")     # sway maju kanan!!!
+                status_msg.data = "stop"
+                self.pub_status.publish(status_msg)
+                self.has_published_stop = True
+
+
+            # if (self.object_class == "Orange_Flare"):
+            #     if not self.has_published_sway:
+            #         # self.set_point.yaw = -80.0
+            #         # self.pub_set_point.publish(self.set_point)
+            #         self.get_logger().info("sway kanan!!!")     # sway maju kanan!!!
                     
-                    status_msg = String()
-                    status_msg.data = "sway_right_forward"              # sway_right_forward
-                    self.pub_status.publish(status_msg)
+            #         status_msg = String()
+            #         status_msg.data = "sway_right_forward"              # sway_right_forward
+            #         self.pub_status.publish(status_msg)
 
-                    self.has_published_sway = True  # Set flag agar tidak dipublish lagi
+            #         self.has_published_sway = True  # Set flag agar tidak dipublish lagi
 
-                if self.is_in_range(25, 27):
-                    if not self.has_published_stop:
-                        self.get_logger().info("stopppp")
-                        self.set_point.depth = -0.75
+                # if self.is_in_range(19, 22):
+                #     if not self.has_published_stop:
+                #         self.get_logger().info("stopppp")
+                #         self.set_point.depth = -0.75
                         
-                        status_msg = String()
-                        status_msg.data = "dpr_ssy"
-                        self.pub_status.publish(status_msg)
-                        self.has_published_stop = True  # Set flag agar tidak dipublish lagi
+                #         status_msg = String()
+                #         status_msg.data = "dpr_ssy"
+                #         self.pub_status.publish(status_msg)
+                #         self.has_published_stop = True  # Set flag agar tidak dipublish lagi
 
         
 

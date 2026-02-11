@@ -20,27 +20,27 @@ class PubTeensy(Node):  #inherit dari class Node nya rclpy (from rclpy.node impo
         time.sleep(1)
 
         pid_yaw = PID()
-        pid_yaw.kp = 7.0  # Proportional constant for yaw
+        pid_yaw.kp = 3.0  #7.0 # Proportional constant for yaw
         pid_yaw.ki = 0.0   # Integral constant for yaw
         pid_yaw.kd = 0.0   # Derivative constant for yaw
 
         pid_pitch = PID()
-        pid_pitch.kp = 3000.0 #2200 #1700 #1375  # Proportional constant for pitch
+        pid_pitch.kp = 700.0 #4500.0 #2200 #1700 #1375  # Proportional constant for pitch
         pid_pitch.ki = 0.0   # Integral constant for pitch
         pid_pitch.kd = 0.0    # Derivative constant for pitch
 
         pid_roll = PID()
-        pid_roll.kp = 500.0   # Proportional constant for roll #50 stabil setelah diubah dari 500
+        pid_roll.kp = 300.0 #500.0   # Proportional constant for roll #50 stabil setelah diubah dari 500
         pid_roll.ki = 0.0     # Integral constant for roll
         pid_roll.kd = 0.0     # Derivative constant for roll
 
         pid_depth = PID()
-        pid_depth.kp = 4000.0 #5000 #1700.0  # Proportional constant for depth
+        pid_depth.kp = 1500.0 #4000.0 #5000 #1700.0  # Proportional constant for depth
         pid_depth.ki = 0.0     # Integral constant for depth
-        pid_depth.kd = 500.0     # Derivative constant for depth
+        pid_depth.kd = 0.0 #500.0     # Derivative constant for depth
 
         pid_camera = PID()
-        pid_camera.kp = 1.0       # Proportional constant for camera
+        pid_camera.kp = 0.5 #1.0      # Proportional constant for camera
         pid_camera.ki = 0.0     # Integral constant for camera
         pid_camera.kd = 0.0     # Derivative constant for camera
 
@@ -54,10 +54,10 @@ class PubTeensy(Node):  #inherit dari class Node nya rclpy (from rclpy.node impo
         
         # SetPoint message data
         set_point = SetPoint()
-        set_point.yaw = 60.0
-        set_point.pitch = 0.0
+        set_point.yaw = 264.0
+        set_point.pitch = 0.03
         set_point.roll = 0.0
-        set_point.depth = -0.75 #0.01
+        set_point.depth = 0.05 #0.01
 
         # Status message data
         status = String()
