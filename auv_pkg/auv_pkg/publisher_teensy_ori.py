@@ -20,9 +20,9 @@ class PubTeensy(Node):  #inherit dari class Node nya rclpy (from rclpy.node impo
         time.sleep(1)
 
         pid_yaw = PID()
-        pid_yaw.kp = 5.0  #7.0 # Proportional constant for yaw
-        pid_yaw.ki = 0.15  # Integral constant for yaw
-        pid_yaw.kd = 0.0   # Derivative constant for yaw
+        pid_yaw.kp = 2.6  #7.0 # Proportional constant for yaw
+        pid_yaw.ki = 0.03   # Integral constant for yaw
+        pid_yaw.kd = 0.11   # Derivative constant for yaw
 
         pid_pitch = PID()
         pid_pitch.kp = 700.0 #4500.0 #2200 #1700 #1375  # Proportional constant for pitch
@@ -54,14 +54,14 @@ class PubTeensy(Node):  #inherit dari class Node nya rclpy (from rclpy.node impo
         
         # SetPoint message data
         set_point = SetPoint()
-        set_point.yaw = 268.0
+        set_point.yaw = 264.0
         set_point.pitch = 0.00
         set_point.roll = 0.0
         set_point.depth = -0.2 #0.01
 
         # Status message data
         status = String()
-        status.data = "yaw"
+        status.data = "stop"
         boost = Float32()
         boost.data = 0.0
 

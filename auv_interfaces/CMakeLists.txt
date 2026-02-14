@@ -13,6 +13,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Actuator.msg"
   "msg/ArduinoSensor.msg"
   "msg/BoundingBox.msg"
+  "msg/VelocitySensor.msg"
   "msg/Error.msg"
   "msg/Gerak.msg"
   "msg/Heading.msg"
@@ -25,6 +26,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/ObjectDifference.msg"
   "msg/Orientation.msg"
   "msg/PID.msg"
+  "msg/PIDVel.msg"
   "msg/Sensor.msg"
   "msg/SetPoint.msg"
   # DEPENDENCIES std_msgs builtin_interfaces

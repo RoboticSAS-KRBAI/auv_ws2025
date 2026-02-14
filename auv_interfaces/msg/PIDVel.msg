@@ -1,0 +1,13 @@
+float32 timestamp
+float32 setpoint
+float32 measured_velocity
+float32 error
+float32 p_term
+float32 i_term
+float32 d_term
+float32 control_output
+int16 pwm_output
+float32 yaw
+float32 kp
+float32 ki
+float32 kd
