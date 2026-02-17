@@ -8,12 +8,12 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
+find_package(std_msgs REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Actuator.msg"
   "msg/ArduinoSensor.msg"
   "msg/BoundingBox.msg"
-  "msg/VelocitySensor.msg"
   "msg/Error.msg"
   "msg/Gerak.msg"
   "msg/Heading.msg"
@@ -29,7 +29,8 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/PIDVel.msg"
   "msg/Sensor.msg"
   "msg/SetPoint.msg"
-  # DEPENDENCIES std_msgs builtin_interfaces
+  DEPENDENCIES builtin_interfaces
+  DEPENDENCIES std_msgs
 )
 
 ament_export_dependencies(rosidl_default_runtime)

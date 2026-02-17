@@ -27,6 +27,8 @@ setup(
             "pub_teensy = auv_pkg.publisher_teensy:main",
             "tes_gui = auv_pkg.gui.gui_node:main",
             "tes_gui_v2 = auv_pkg.gui.tes_gui_v2:main",
+            "pub_teensy_serial_simple = auv_pkg.publisher_teensy_serial:main",
+            "pid_logger_pub = auv_pkg.pid_logger_pub:main"
         ],
     },
 )
