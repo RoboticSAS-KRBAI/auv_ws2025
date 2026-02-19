@@ -1,29 +1,72 @@
 #!/usr/bin/env python3
-
+import math
 import sys
 import threading
 from PyQt5 import QtWidgets, QtCore
+from PyQt5.QtGui import QPixmap, QTransform, QPainter
 from .AUV_GUI import Ui_MainWindow  # hasil dari pyuic5
+from .ModelAUV import ROV3DWidget
+# from PyQt5.QtOpenGL import QGLWidget
 
 import rclpy
 from rclpy.node import Node
 from auv_interfaces.msg import MultiPID, SetPoint, Sensor, PID, MultiPID, SetPoint, Actuator
 from std_msgs.msg import String, Float32
 
-# class GuiSignals(QtCore.QObject):
-#     sensor_update = QtCore.pyqtSignal(object)
+# from .camera_node import CameraThread
 
 class GuidanceGUI(Node):
     def __init__(self, ui):
         super().__init__('gui_guidance')
         self.ui = ui
-        # self.signals = GuiSignals()
+
+        # 1. Buat GLWidget baru
+        self.opengl_widget = ROV3DWidget(self.ui.openGLWidget.parent())
+
+        # 2. Pastikan widget bisa kelihatan (sangat penting)
+        self.opengl_widget.setMaximumSize(355, 350)
+
+        # 3. Ambil layout yang berisi OpenGLWidget lama
+        layout = self.ui.gridLayout_3
+
+        # 2. Ganti widgetnya
+        layout.replaceWidget(self.ui.openGLWidget, self.opengl_widget)
+
+        # 3. Hapus placeholder lama
+        self.ui.openGLWidget.setParent(None)
+
+        # 4. Tampilkan ulang
+        self.opengl_widget.show()
+
+        #yaw_dot
+        self.dot_pixmap = QPixmap("Downloads/dot1.png").scaled(
+            390, 390,
+            QtCore.Qt.KeepAspectRatio,
+            QtCore.Qt.FastTransformation
+        )
+
+        self.ui.labeldot.setScaledContents(False)
+
+        self.ui.labeldot.setPixmap(self.dot_pixmap)
+
+        # Inisialisasi yaw
+        self.current_yaw = 0
+        self.current_pitch = 0
+        self.current_roll = 0
+
+        self.rotate_timer = QtCore.QTimer()
+        self.rotate_timer.timeout.connect(self.updateYaw)
+        self.rotate_timer.start(50)
         
-        # self.signals.sensor_update.connect(self.update_sensor_gui)
+        # camera
+        # self.camera_thread = CameraThread()
+        # self.camera_thread.frame_ready.connect(self.update_camera_view)
+        # self.camera_thread.start()
+
 
         # Subscriptions
         # self.sub_pid = self.create_subscription(MultiPID, 'pid', self.pid_callback, 10)
-        self.sub_setpoint = self.create_subscription(SetPoint, 'set_point_msg', self.setpoint_callback, 10)
+        self.sub_setpoint = self.create_subscription(SetPoint, 'set_point', self.setpoint_callback, 10)
         self.sub_status = self.create_subscription(String, 'status_msg', self.status_callback, 10)
         self.sub_status_setpoint = self.create_subscription(String, 'status', self.status_setpoint_callback, 10)
         self.sub_sensor = self.create_subscription(Sensor, 'sensor_msg', self.sensor_callback, 10)
@@ -35,47 +78,79 @@ class GuidanceGUI(Node):
         self.pub_status = self.create_publisher(String, 'status', 10)
         self.pub_boost = self.create_publisher(Float32, 'boost', 10)
 
-        self.ui.pushButton.clicked.connect(self.publish_values)
+        self.ui.setPointStatusButton.clicked.connect(self.publish_values)
+        self.ui.emergencyButton.clicked.connect(self.emergency_stop)
 
         self.get_logger().info("GUI ROS2 Node Started with Publishers")
     
-    def publish_values(self):
-
+    def emergency_stop(self):
+        self.publish_values(status_override="stop")
+    
+    def publish_values(self, status_override=None):
         try:
-            yaw = float(self.ui.setYaw.text())
+            if isinstance(status_override, str):
+                statusText = status_override
+            else:
+                statusText = self.ui.comboBoxStatus.currentText()
+            
+            yaw = float(self.ui.setYaw.text()) 
+            depth = float(self.ui.setDepth.text())
             pitch = float(self.ui.setPitch.text())
             roll = float(self.ui.setRoll.text())
-            depth = float(self.ui.setDepth.text())
+
+            kp_yaw = float(self.ui.setPYaw.text())
+            kp_pitch = float(self.ui.setPPitch.text())
+            kp_roll = float(self.ui.setPRoll.text())
+            kp_depth = float(self.ui.setPDepth.text())
+            kp_camera = float(self.ui.setPCamera.text())
+
+            ki_yaw = float(self.ui.setIYaw.text())
+            ki_pitch = float(self.ui.setIPitch.text())
+            ki_roll = float(self.ui.setIRoll.text())
+            ki_depth = float(self.ui.setIDepth.text())
+            ki_camera = float(self.ui.setICamera.text())
+            
+            kd_yaw = float(self.ui.setDYaw.text())
+            kd_pitch = float(self.ui.setDPitch.text())
+            kd_roll = float(self.ui.setDRoll.text())
+            kd_depth = float(self.ui.setDDepth.text())
+            kd_camera = float(self.ui.setDCamera.text())
         except:
             print("ERROR: Input tidak valid")
             return
 
         # -------- PID values (bisa kamu ubah) ----------
         pid_yaw = PID()
-        pid_yaw.kp = 10.0
-        pid_yaw.ki = 0.0
-        pid_yaw.kd = 0.0
+        pid_yaw.kp = kp_yaw
+        pid_yaw.ki = ki_yaw
+        pid_yaw.kd = kd_yaw
 
         pid_pitch = PID()
-        pid_pitch.kp = 4000.0
-        pid_pitch.ki = 0.0
-        pid_pitch.kd = 0.0
+        pid_pitch.kp = kp_pitch
+        pid_pitch.ki = ki_pitch
+        pid_pitch.kd = kd_pitch
 
         pid_roll = PID()
-        pid_roll.kp = 500.0
-        pid_roll.ki = 0.0
-        pid_roll.kd = 0.0
+        pid_roll.kp = kp_roll
+        pid_roll.ki = ki_roll
+        pid_roll.kd = kd_roll
 
         pid_depth = PID()
-        pid_depth.kp = 3000.0
-        pid_depth.ki = 0.0
-        pid_depth.kd = 0.0
+        pid_depth.kp = kp_depth
+        pid_depth.ki = ki_depth
+        pid_depth.kd = kd_depth
+
+        pid_camera = PID()
+        pid_camera.kp = kp_camera
+        pid_camera.ki = ki_camera
+        pid_camera.kd = kd_camera
 
         multi_pid_msg = MultiPID()
         multi_pid_msg.pid_yaw = pid_yaw
         multi_pid_msg.pid_pitch = pid_pitch
         multi_pid_msg.pid_roll = pid_roll
         multi_pid_msg.pid_depth = pid_depth
+        multi_pid_msg.pid_camera = pid_camera
 
         # -------- SetPoint message ----------
         set_point = SetPoint()
@@ -86,7 +161,7 @@ class GuidanceGUI(Node):
 
         # -------- Status ----------
         status = String()
-        status.data = "yaw"
+        status.data = statusText
 
         # -------- Boost ----------
         boost = Float32()
@@ -104,17 +179,25 @@ class GuidanceGUI(Node):
         print("Roll:", roll)
         print("Depth:", depth)
         print("================================")
+    
+    def g_to_deg(self, g_value, gain=2.5):
+        g = max(min(g_value * gain, 1.0), -1.0)
+        return math.degrees(math.asin(g))
 
-    # def pid_callback(self, msg):
-        # self.ui.lblYaw.setText(f"Yaw KP: {msg.pid_yaw.kp:.2f}")
-        # self.ui.lblYaw.setText(f"Yaw KP: {msg.pid_yaw.kp:.2f}" if msg.pid_yaw.kp is not None else "Yaw KP: None")
-        # self.ui.lblPitch.setText(f"Pitch KP: {msg.pid_pitch.kp:.2f}")
-        # self.ui.lblRoll.setText(f"Roll KP: {msg.pid_roll.kp:.2f}")
-        # self.ui.lblDepth.setText(f"Depth KP: {msg.pid_depth.kp:.2f}")
-        # self.ui.yawValue.setText(f"{msg.pid_yaw.kp:.2f}")
-        # self.ui.pitchValue.setText(f"{msg.pid_pitch.kp:.2f}")
-        # self.ui.rollValue.setText(f"{msg.pid_roll.kp:.2f}")
-        # self.ui.depthValue.setText(f"{msg.pid_depth.kp:.2f}")
+    def updateYaw(self):
+        angle = self.current_yaw
+
+        pitch_deg = self.current_pitch*22.5
+        roll_deg  = self.g_to_deg(self.current_roll)
+
+        transform = QTransform().rotate(angle)
+        rotated = self.dot_pixmap.transformed(transform, QtCore.Qt.FastTransformation)
+
+        self.ui.labeldot.setPixmap(rotated)
+
+        if self.opengl_widget:
+            self.opengl_widget.update_orientation(-angle, -pitch_deg, roll_deg)
+
 
     def status_callback(self, msg):
         self.ui.Status.setText(msg.data)
@@ -122,11 +205,15 @@ class GuidanceGUI(Node):
     def status_setpoint_callback(self, msg):
         self.ui.statusSetPoint.setText(msg.data)
 
-    def sensor_callback(self,msg):
+    def sensor_callback(self, msg):
+        self.current_yaw = round(msg.yaw, 0)
+        self.current_pitch = round(msg.pitch, 0)
+        self.current_roll = round(msg.roll, 0)
         self.ui.Yaw.setText(f"{msg.yaw:.0f}°")
         self.ui.Depth.setText(f"{msg.depth:.2f}")
         self.ui.Pitch.setText(f"{msg.pitch:.2f}")
         self.ui.Roll.setText(f"{msg.roll:.2f}")
+
 
     def setpoint_callback(self, msg):
         # self.ui.lblSetpoint.setText(f"Yaw: {msg.yaw:.2f}, Depth: {msg.depth:.2f}")
@@ -134,13 +221,6 @@ class GuidanceGUI(Node):
         self.ui.depthSetPoint.setText(f"{msg.depth:.2f}")
         self.ui.pitchSetPoint.setText(f"{msg.pitch:.2f}")
         self.ui.rollSetPoint.setText(f"{msg.roll:.2f}")
-
-    
-    # def update_sensor_gui(self, msg):
-    #     self.ui.lblYawValue.setText(f"{msg.yaw:.2f}")
-    #     self.ui.lblPitchValue.setText(f"{msg.pitch:.2f}")
-    #     self.ui.lblRollValue.setText(f"{msg.roll:.2f}")
-    #     self.ui.lblDepthValue.setText(f"{msg.depth:.2f}")
 
     def actuator_callback(self, msg):
         self.ui.Thruster1.setText(f"{msg.thruster_1:.2f}")

@@ -50,9 +50,9 @@ class PubTeensy(Node):
 
         # ================ INITIAL PARAMETERS PID =================
         pid_yaw = PID()
-        pid_yaw.kp = 3.0 //3.0
+        pid_yaw.kp = 3.0
         pid_yaw.ki = 0.0
-        pid_yaw.kd = 0.6 //0.6
+        pid_yaw.kd = 0.5
 
         pid_pitch = PID()
         pid_pitch.kp = 0.0
