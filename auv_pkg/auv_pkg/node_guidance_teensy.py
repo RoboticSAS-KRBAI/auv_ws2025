@@ -31,10 +31,10 @@ class SubGuidance(Node):
 
         self.set_point = SetPoint()
         self.multi_pid_msg = MultiPID()
-        self.set_point.yaw =  260.0
+        self.set_point.yaw =  266.0
         self.set_point.pitch = 0.0
         self.set_point.roll = 0.0
-        self.set_point.depth = -0.36
+        self.set_point.depth = -0.15
 
         self.param_delay = 3
         self.param_duration = 0
@@ -56,24 +56,24 @@ class SubGuidance(Node):
 
         # Create multiple PID messages
         self.pid_yaw = PID()
-        self.pid_yaw.kp = 1.0 #3.0   #15 # Proportional constant for yaw
+        self.pid_yaw.kp = 5.0 #3.0   #15 # Proportional constant for yaw
         self.pid_yaw.ki = 0.0   # Integral constant for yaw
-        self.pid_yaw.kd = 0.0   # Derivative constant for yaw
+        self.pid_yaw.kd = 0.3   # Derivative constant for yaw
 
         self.pid_pitch = PID()
-        self.pid_pitch.kp = 300.0 #700.0  #4500  # Proportional constant for pitch 
+        self.pid_pitch.kp = 400.0 #700.0  #4500  # Proportional constant for pitch 
         self.pid_pitch.ki = 0.0          # Integral constant for pitch
-        self.pid_pitch.kd = 0.0    # Derivative constant for pitch
+        self.pid_pitch.kd = 40.0    # Derivative constant for pitch
 
         self.pid_roll = PID()
-        self.pid_roll.kp = 150.0 #300.0  #700 # Proportional constant for roll
+        self.pid_roll.kp = 72.0 #300.0  #700 # Proportional constant for roll
         self.pid_roll.ki = 0.0     # Integral constant for roll
-        self.pid_roll.kd = 0.0     # Derivative constant for roll
+        self.pid_roll.kd = 8.0     # Derivative constant for roll
 
         self.pid_depth = PID()
-        self.pid_depth.kp = 1500.0  #3000  # Proportional constant for depth
+        self.pid_depth.kp = 1350.0  #3000  # Proportional constant for depth
         self.pid_depth.ki = 0.0     # Integral constant for depth
-        self.pid_depth.kd = 60.0 #0.0     # Derivative constant for depth
+        self.pid_depth.kd = 215.0 #0.0     # Derivative constant for depth
 
         self.pid_camera = PID()
         self.pid_camera.kp = 0.5    #1.0   # Proportional constant for camera
@@ -127,14 +127,14 @@ class SubGuidance(Node):
 
     def start_auv(self):
         
-        if self.is_in_range(0, 5):
+        if self.is_in_range(0, 10):
             if not self.has_published_dpr_ssy:
-                self.get_logger().info("maju")
+                self.get_logger().info("dprssy")
                 self.pub_multi_pid.publish(self.multi_pid_msg)
                 self.pub_set_point.publish(self.set_point)
                 
                 status_msg = String()
-                status_msg.data = "dpr_ssy"
+                status_msg.data = "all"
                 self.pub_status.publish(status_msg)
                 
                 boost_msg = Float32()
@@ -143,31 +143,40 @@ class SubGuidance(Node):
 
                 self.has_published_dpr_ssy = True  # Set flag agar tidak dipublish lagi
 
-        elif self.is_in_range(5, 10): # cari objek n do something
+        elif self.is_in_range(10, 18): # cari objek n do something
+            self.has_published_forward = False
             if not self.has_published_forward:
                 # self.pid_yaw.kp = 3.0
-                self.pub_multi_pid.publish(self.multi_pid_msg)
-                self.get_logger().info("maju!!!")
+                # self.pub_multi_pid.publish(self.multi_pid_msg)
+                self.get_logger().info("go back!!!")
                 
                 status_msg = String()
                 # mungkin bisa inisialisasi di awal self.s  tatus_msg = String()
                 # (biar ga usah init berulang kali)
+                if self.set_point.yaw != 97.0:
+                    self.set_point.yaw = 97.0
+                    self.pub_set_point.publish(self.set_point)
 
                 status_msg.data = "all"
                 self.pub_status.publish(status_msg)
 
                 self.has_published_forward = True  # Set flag agar tidak dipublish lagi
-        elif self.is_in_range(10, 12): # cari objek n do something
+
+
+        elif self.is_in_range(18, None): # cari objek n do something
             if not self.has_published_stop:
                 # self.pid_yaw.kp = 3.0
                 self.pub_multi_pid.publish(self.multi_pid_msg)
-                self.get_logger().info("stop!!!")
-                
-                status_msg = String()
+                self.get_logger().info("surfacing!!!")
+                if self.set_point.depth != -0.54:
+                    self.set_point.depth = -0.54
+                    self.pub_set_point.publish(self.set_point)
 
-                status_msg.data = "stop"
+                status_msg = String()
+                status_msg.data = "dpr_ssy"
                 self.pub_status.publish(status_msg)
                 self.has_published_stop = True
+
 
 
             # if (self.object_class == "Orange_Flare"):
@@ -204,7 +213,7 @@ class SubGuidance(Node):
         #     self.pub_status.publish(status_msg)
             
         #     boost_msg = Float32()
-        #     boost_msg.data = self.boost
+        #     boost_msself.pub_set_point.publish(self.set_pointself.pub_set_point.publish(self.set_pointg.data = self.boost
         #     self.pub_boost.publish(boost_msg)
             
         # elif self.is_in_range(10, 15):

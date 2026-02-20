@@ -25,17 +25,17 @@ class PubTeensy(Node):  #inherit dari class Node nya rclpy (from rclpy.node impo
         pid_yaw.kd = 0.3   # Derivative constant for yaw
 
         pid_pitch = PID()
-        pid_pitch.kp = 200.0 #4500.0 #2200 #1700 #1375  # Proportional constant for pitch
+        pid_pitch.kp = 400.0 #4500.0 #2200 #1700 #1375  # Proportional constant for pitch
         pid_pitch.ki = 0.0   # Integral constant for pitch
-        pid_pitch.kd = 1.0    # Derivative constant for pitch
+        pid_pitch.kd = 40.0    # Derivative constant for pitch
 
         pid_roll = PID()
-        pid_roll.kp = 60.0 #300.0 #500.0   # Proportional constant for roll #50 stabil setelah diubah dari 500
+        pid_roll.kp = 72.0 #300.0 #500.0   # Proportional constant for roll #50 stabil setelah diubah dari 500
         pid_roll.ki = 0.0     # Integral constant for roll
-        pid_roll.kd = 0.51     # Derivative constant for roll
+        pid_roll.kd = 8.0     # Derivative constant for roll
 
         pid_depth = PID()
-        pid_depth.kp = 1300.0 #4000.0 #5000 #1700.0  # Proportional constant for depth
+        pid_depth.kp = 1350.0 #4000.0 #5000 #1700.0  # Proportional constant for depth
         pid_depth.ki = 0.0     # Integral constant for depth
         pid_depth.kd = 215.0 #500.0     # Derivative constant for depth
 
