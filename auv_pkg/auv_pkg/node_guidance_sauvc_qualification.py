@@ -31,10 +31,10 @@ class SubGuidance(Node):
 
         self.set_point = SetPoint()
         self.multi_pid_msg = MultiPID()
-        self.set_point.yaw =  271.0
+        self.set_point.yaw =  266.0
         self.set_point.pitch = 0.0
         self.set_point.roll = 0.0
-        self.set_point.depth = -0.29
+        self.set_point.depth = -0.15
 
         self.param_delay = 3
         self.param_duration = 0
@@ -128,60 +128,55 @@ class SubGuidance(Node):
     def start_auv(self):
         
         if self.is_in_range(0, 10):
-            self.get_logger().info("maju!!!")
-            self.pub_multi_pid.publish(self.multi_pid_msg)
-            self.pub_set_point.publish(self.set_point)
+            if not self.has_published_dpr_ssy:
+                self.get_logger().info("dprssy")
+                self.pub_multi_pid.publish(self.multi_pid_msg)
+                self.pub_set_point.publish(self.set_point)
                 
-            status_msg = String()
-            status_msg.data = "all"
-            self.pub_status.publish(status_msg)
+                status_msg = String()
+                status_msg.data = "all"
+                self.pub_status.publish(status_msg)
+                
+                boost_msg = Float32()
+                boost_msg.data = self.boost
+                self.pub_boost.publish(boost_msg)
+
+                self.has_published_dpr_ssy = True  # Set flag agar tidak dipublish lagi
 
         elif self.is_in_range(10, 18): # cari objek n do something
-            self.get_logger().info("sway right!!!")
-
-            status_msg = String()
-            status_msg.data = "sway_right"
-            self.pub_status.publish(status_msg)
-
-        elif self.is_in_range(18, 28): # cari objek n do something
-            self.get_logger().info("go back!!!")
+            self.has_published_forward = False
+            if not self.has_published_forward:
+                # self.pid_yaw.kp = 3.0
+                # self.pub_multi_pid.publish(self.multi_pid_msg)
+                self.get_logger().info("go back!!!")
                 
-            if self.set_point.yaw != 80.0:
-                self.set_point.yaw = 80.0
-                self.pub_set_point.publish(self.set_point)
+                status_msg = String()
+                # mungkin bisa inisialisasi di awal self.s  tatus_msg = String()
+                # (biar ga usah init berulang kali)
+                if self.set_point.yaw != 97.0:
+                    self.set_point.yaw = 97.0
+                    self.pub_set_point.publish(self.set_point)
 
-            status_msg = String()
-            status_msg.data = "all"
-            self.pub_status.publish(status_msg)
+                status_msg.data = "all"
+                self.pub_status.publish(status_msg)
 
-        elif self.is_in_range(28, 36): # cari objek n do something
-            self.get_logger().info("sway right!!!")
+                self.has_published_forward = True  # Set flag agar tidak dipublish lagi
 
-            status_msg = String()
-            status_msg.data = "sway_right"
-            self.pub_status.publish(status_msg)
 
-        elif self.is_in_range(36, 38): # cari objek n do something
-            self.pub_multi_pid.publish(self.multi_pid_msg)
-            self.get_logger().info("surfacing!!!")
-            if self.set_point.depth != -0.54 and self.set_point.yaw != 271.0:
-                self.set_point.depth = -0.54
-                self.set_point.yaw = 271.0
-                self.pub_set_point.publish(self.set_point)
-
-            status_msg = String()
-            status_msg.data = "dpr_ssy"
-            self.pub_status.publish(status_msg)
-        
-        elif self.is_in_range(36, 38): # cari objek n do something
+        elif self.is_in_range(18, None): # cari objek n do something
             if not self.has_published_stop:
+                # self.pid_yaw.kp = 3.0
                 self.pub_multi_pid.publish(self.multi_pid_msg)
-                self.get_logger().info("stop!!!")
+                self.get_logger().info("surfacing!!!")
+                if self.set_point.depth != -0.54:
+                    self.set_point.depth = -0.54
+                    self.pub_set_point.publish(self.set_point)
 
                 status_msg = String()
-                status_msg.data = "stop"
+                status_msg.data = "dpr_ssy"
                 self.pub_status.publish(status_msg)
                 self.has_published_stop = True
+
 
 
             # if (self.object_class == "Orange_Flare"):
