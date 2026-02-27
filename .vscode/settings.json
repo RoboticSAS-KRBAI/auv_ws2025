@@ -1,3 +1,22 @@
 {
-    "cmake.sourceDirectory": "/home/techsas/auv_ws/src/auv_interfaces"
+    "cmake.sourceDirectory": "/home/techsas/auv_ws/src/auv_interfaces",
+    "ROS2.distro": "humble",
+    "python.autoComplete.extraPaths": [
+        "/home/reynard/auv_ws/build/robot_controller",
+        "/home/reynard/auv_ws/install/robot_controller/lib/python3.10/site-packages",
+        "/home/reynard/auv_ws/build/my-test-package",
+        "/home/reynard/auv_ws/install/my-test-package/lib/python3.10/site-packages",
+        "/home/reynard/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/reynard/auv_ws/build/robot_controller",
+        "/home/reynard/auv_ws/install/robot_controller/lib/python3.10/site-packages",
+        "/home/reynard/auv_ws/build/my-test-package",
+        "/home/reynard/auv_ws/install/my-test-package/lib/python3.10/site-packages",
+        "/home/reynard/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ]
 }
