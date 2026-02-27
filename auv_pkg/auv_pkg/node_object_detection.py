@@ -20,7 +20,7 @@ class ObjectDetectionNode(Node):
 
         self.obj_det_pub = self.create_publisher(ObjectDetection, 'object_detection', 10)
 
-        self.model = YOLO('yolo11n.pt')
+        self.model = YOLO('/home/techsas/auv_ws/src/auv_pkg/pt/26feb2026.pt')
         self.use_cuda = cv2.cuda.getCudaEnabledDeviceCount() > 0
 
         x = 640
