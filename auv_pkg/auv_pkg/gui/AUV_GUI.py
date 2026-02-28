@@ -558,7 +558,7 @@ class Ui_MainWindow(object):
         self.labelCompass.setStyleSheet("padding:0;\n"
 "border-radius:195px;")
         self.labelCompass.setText("")
-        self.labelCompass.setPixmap(QtGui.QPixmap("Downloads/background.png"))
+        self.labelCompass.setPixmap(QtGui.QPixmap("/home/techsas/auv_ws/src/auv_pkg/auv_pkg/gui/Frame 3.png"))
         self.labelCompass.setScaledContents(True)
         self.labelCompass.setAlignment(QtCore.Qt.AlignCenter)
         self.labelCompass.setObjectName("labelCompass")
@@ -569,7 +569,7 @@ class Ui_MainWindow(object):
 "border-radius:195px;\n"
 "background:none;")
         self.labeldot.setText("")
-        self.labeldot.setPixmap(QtGui.QPixmap("Downloads/dot1.png"))
+        self.labeldot.setPixmap(QtGui.QPixmap("/home/techsas/auv_ws/src/auv_pkg/auv_pkg/gui/dot.png"))
         self.labeldot.setScaledContents(True)
         self.labeldot.setAlignment(QtCore.Qt.AlignCenter)
         self.labeldot.setObjectName("labeldot")

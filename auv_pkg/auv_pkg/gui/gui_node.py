@@ -39,7 +39,7 @@ class GuidanceGUI(Node):
         self.opengl_widget.show()
 
         #yaw_dot
-        self.dot_pixmap = QPixmap("Downloads/dot1.png").scaled(
+        self.dot_pixmap = QPixmap("/home/techsas/auv_ws/src/auv_pkg/auv_pkg/gui/dot.png").scaled(
             390, 390,
             QtCore.Qt.KeepAspectRatio,
             QtCore.Qt.FastTransformation

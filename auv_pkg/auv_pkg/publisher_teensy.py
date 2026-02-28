@@ -61,7 +61,7 @@ class PubTeensy(Node):  #inherit dari class Node nya rclpy (from rclpy.node impo
 
         # Status message data
         status = String()
-        status.data = "yaw"
+        status.data = "stop"
         boost = Float32()
         boost.data = 0.0
 

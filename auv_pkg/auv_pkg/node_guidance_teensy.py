@@ -31,10 +31,10 @@ class SubGuidance(Node):
 
         self.set_point = SetPoint()
         self.multi_pid_msg = MultiPID()
-        self.set_point.yaw =  271.0
+        self.set_point.yaw =  270.0
         self.set_point.pitch = 0.0
         self.set_point.roll = 0.0
-        self.set_point.depth = -0.29
+        self.set_point.depth = -0.68
 
         self.param_delay = 3
         self.param_duration = 0
@@ -56,19 +56,19 @@ class SubGuidance(Node):
 
         # Create multiple PID messages
         self.pid_yaw = PID()
-        self.pid_yaw.kp = 5.0 #3.0   #15 # Proportional constant for yaw
+        self.pid_yaw.kp = 4.5 #3.0   #15 # Proportional constant for yaw
         self.pid_yaw.ki = 0.0   # Integral constant for yaw
         self.pid_yaw.kd = 0.3   # Derivative constant for yaw
 
         self.pid_pitch = PID()
-        self.pid_pitch.kp = 400.0 #700.0  #4500  # Proportional constant for pitch 
+        self.pid_pitch.kp = 10.0 #700.0  #4500  # Proportional constant for pitch 
         self.pid_pitch.ki = 0.0          # Integral constant for pitch
-        self.pid_pitch.kd = 40.0    # Derivative constant for pitch
+        self.pid_pitch.kd = 1.1    # Derivative constant for pitch
 
         self.pid_roll = PID()
-        self.pid_roll.kp = 72.0 #300.0  #700 # Proportional constant for roll
+        self.pid_roll.kp = 2.5 #300.0  #700 # Proportional constant for roll
         self.pid_roll.ki = 0.0     # Integral constant for roll
-        self.pid_roll.kd = 8.0     # Derivative constant for roll
+        self.pid_roll.kd = 0.3     # Derivative constant for roll
 
         self.pid_depth = PID()
         self.pid_depth.kp = 1350.0  #3000  # Proportional constant for depth
@@ -127,7 +127,7 @@ class SubGuidance(Node):
 
     def start_auv(self):
         
-        if self.is_in_range(0, 10):
+        if self.is_in_range(0, 11.5):
             self.get_logger().info("maju!!!")
             self.pub_multi_pid.publish(self.multi_pid_msg)
             self.pub_set_point.publish(self.set_point)
@@ -136,44 +136,37 @@ class SubGuidance(Node):
             status_msg.data = "all"
             self.pub_status.publish(status_msg)
 
-        elif self.is_in_range(10, 18): # cari objek n do something
-            self.get_logger().info("sway right!!!")
+        # elif self.is_in_range(10, 18): # cari objek n do something
+        #     self.get_logger().info("sway right!!!")
 
-            status_msg = String()
-            status_msg.data = "sway_right"
-            self.pub_status.publish(status_msg)
+        #     status_msg = String()
+        #     status_msg.data = "sway_right"
+        #     self.pub_status.publish(status_msg)
 
-        elif self.is_in_range(18, 28): # cari objek n do something
+        elif self.is_in_range(11.5, 15):
             self.get_logger().info("go back!!!")
                 
-            if self.set_point.yaw != 80.0:
-                self.set_point.yaw = 80.0
+            if self.set_point.yaw != 90.0:
+                self.set_point.yaw = 90.0
                 self.pub_set_point.publish(self.set_point)
 
             status_msg = String()
             status_msg.data = "all"
             self.pub_status.publish(status_msg)
 
-        elif self.is_in_range(28, 36): # cari objek n do something
-            self.get_logger().info("sway right!!!")
-
-            status_msg = String()
-            status_msg.data = "sway_right"
-            self.pub_status.publish(status_msg)
-
-        elif self.is_in_range(36, 38): # cari objek n do something
+        elif self.is_in_range(15, 17): # cari objek n do something
             self.pub_multi_pid.publish(self.multi_pid_msg)
             self.get_logger().info("surfacing!!!")
-            if self.set_point.depth != -0.54 and self.set_point.yaw != 271.0:
+            if self.set_point.depth != -0.54 and self.set_point.yaw != 270.0:
                 self.set_point.depth = -0.54
-                self.set_point.yaw = 271.0
+                self.set_point.yaw = 270.0
                 self.pub_set_point.publish(self.set_point)
 
             status_msg = String()
             status_msg.data = "dpr_ssy"
             self.pub_status.publish(status_msg)
         
-        elif self.is_in_range(36, 38): # cari objek n do something
+        elif self.is_in_range(21, None): # cari objek n do something
             if not self.has_published_stop:
                 self.pub_multi_pid.publish(self.multi_pid_msg)
                 self.get_logger().info("stop!!!")
