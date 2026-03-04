@@ -34,7 +34,7 @@ class SubGuidance(Node):
         self.set_point.yaw =  270.0
         self.set_point.pitch = 0.0
         self.set_point.roll = 0.0
-        self.set_point.depth = -0.68
+        self.set_point.depth = -0.36
 
         self.param_delay = 3
         self.param_duration = 0
@@ -56,24 +56,24 @@ class SubGuidance(Node):
 
         # Create multiple PID messages
         self.pid_yaw = PID()
-        self.pid_yaw.kp = 4.5 #3.0   #15 # Proportional constant for yaw
+        self.pid_yaw.kp = 4.5 #4.5 #3.0   #15 # Proportional constant for yaw
         self.pid_yaw.ki = 0.0   # Integral constant for yaw
-        self.pid_yaw.kd = 0.3   # Derivative constant for yaw
+        self.pid_yaw.kd = 0.3 #0.3  # Derivative constant for yaw
 
         self.pid_pitch = PID()
-        self.pid_pitch.kp = 10.0 #700.0  #4500  # Proportional constant for pitch 
+        self.pid_pitch.kp = 9.0 #9.0 #10.0 #700.0  #4500  # Proportional constant for pitch 
         self.pid_pitch.ki = 0.0          # Integral constant for pitch
-        self.pid_pitch.kd = 1.1    # Derivative constant for pitch
+        self.pid_pitch.kd = 1.7 #0.32 #1.1   # Derivative constant for pitch
 
         self.pid_roll = PID()
-        self.pid_roll.kp = 2.5 #300.0  #700 # Proportional constant for roll
+        self.pid_roll.kp = 2.5 #2.5 #300.0  #700 # Proportional constant for roll
         self.pid_roll.ki = 0.0     # Integral constant for roll
-        self.pid_roll.kd = 0.3     # Derivative constant for roll
+        self.pid_roll.kd = 0.4 #0.3    # Derivative constant for roll
 
         self.pid_depth = PID()
-        self.pid_depth.kp = 1350.0  #3000  # Proportional constant for depth
+        self.pid_depth.kp = 1350.0 #1350 #3000  # Proportional constant for depth
         self.pid_depth.ki = 0.0     # Integral constant for depth
-        self.pid_depth.kd = 215.0 #0.0     # Derivative constant for depth
+        self.pid_depth.kd = 215.0 #215 #0.0     # Derivative constant for depth
 
         self.pid_camera = PID()
         self.pid_camera.kp = 0.5    #1.0   # Proportional constant for camera
@@ -166,7 +166,7 @@ class SubGuidance(Node):
             status_msg.data = "dpr_ssy"
             self.pub_status.publish(status_msg)
         
-        elif self.is_in_range(21, None): # cari objek n do something
+        elif self.is_in_range(17, None): # cari objek n do something
             if not self.has_published_stop:
                 self.pub_multi_pid.publish(self.multi_pid_msg)
                 self.get_logger().info("stop!!!")
