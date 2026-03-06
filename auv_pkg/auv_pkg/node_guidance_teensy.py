@@ -33,8 +33,8 @@ class SubGuidance(Node):
         self.multi_pid_msg = MultiPID()
         self.set_point.yaw =  270.0
         self.set_point.pitch = 0.0
-        self.set_point.roll = 0.0
-        self.set_point.depth = -0.36
+        self.set_point.roll = 1.2 #0.0
+        self.set_point.depth = -0.32
 
         self.param_delay = 3
         self.param_duration = 0
@@ -61,9 +61,9 @@ class SubGuidance(Node):
         self.pid_yaw.kd = 0.3 #0.3  # Derivative constant for yaw
 
         self.pid_pitch = PID()
-        self.pid_pitch.kp = 9.0 #9.0 #10.0 #700.0  #4500  # Proportional constant for pitch 
+        self.pid_pitch.kp = 15.0 #15.0 (best for fy=2 | 6 Maret 2026) #9.0 #10.0 #700.0  #4500  # Proportional constant for pitch 
         self.pid_pitch.ki = 0.0          # Integral constant for pitch
-        self.pid_pitch.kd = 1.7 #0.32 #1.1   # Derivative constant for pitch
+        self.pid_pitch.kd = 2.6  #2.6  (best for fy=2 | 6 Maret 2026) #1.7 #0.32 #1.1   # Derivative constant for pitch
 
         self.pid_roll = PID()
         self.pid_roll.kp = 2.5 #2.5 #300.0  #700 # Proportional constant for roll
@@ -125,13 +125,18 @@ class SubGuidance(Node):
         if self.param_duration <= 0 or self.boot_time < self.param_duration:
             self.start_auv()
 
+#       ----------------------------------------------------------------------------------------------------------------------------
+#       ----------------------------------------------------------------------------------------------------------------------------
+#       ----------------------------------------------------------------------------------------------------------------------------
+
     def start_auv(self):
-        
+
         if self.is_in_range(0, 11.5):
             self.get_logger().info("maju!!!")
             self.pub_multi_pid.publish(self.multi_pid_msg)
             self.pub_set_point.publish(self.set_point)
                 
+            
             status_msg = String()
             status_msg.data = "all"
             self.pub_status.publish(status_msg)
