@@ -31,10 +31,10 @@ class SubGuidance(Node):
 
         self.set_point = SetPoint()
         self.multi_pid_msg = MultiPID()
-        self.set_point.yaw =  270.0
+        self.set_point.yaw =  0.0
         self.set_point.pitch = 0.0
         self.set_point.roll = 1.2 #0.0
-        self.set_point.depth = -0.32
+        self.set_point.depth = -0.11
 
         self.param_delay = 3
         self.param_duration = 0
@@ -83,7 +83,7 @@ class SubGuidance(Node):
         # Create MultiPID message and add multiple PID sets
         self.multi_pid_msg.pid_yaw = self.pid_yaw
         self.multi_pid_msg.pid_pitch = self.pid_pitch
-        self.multi_pid_msg.pid_roll = self.pid_roll
+        self.multi_pid_msg.pid_roll = self.pid_roll 
         self.multi_pid_msg.pid_depth = self.pid_depth
         self.multi_pid_msg.pid_camera = self.pid_camera
 
@@ -128,55 +128,57 @@ class SubGuidance(Node):
 #       ----------------------------------------------------------------------------------------------------------------------------
 #       ----------------------------------------------------------------------------------------------------------------------------
 #       ----------------------------------------------------------------------------------------------------------------------------
-
     def start_auv(self):
+        status_msg = String()
+        if self.is_in_range(0, 3):
+            self.get_logger().info("maju tanpa yaw!!!")
+            self.pub_multi_pid.publish(self.multi_pid_msg)
+            self.pub_set_point.publish(self.set_point)
+                
+            
+            status_msg.data = "no_yaw_fast"
+            self.pub_status.publish(status_msg)
 
-        if self.is_in_range(0, 11.5):
+        if self.is_in_range(3, 11.5):
             self.get_logger().info("maju!!!")
             self.pub_multi_pid.publish(self.multi_pid_msg)
             self.pub_set_point.publish(self.set_point)
                 
             
-            status_msg = String()
-            status_msg.data = "all"
+            status_msg.data = "boost"
             self.pub_status.publish(status_msg)
 
         # elif self.is_in_range(10, 18): # cari objek n do something
         #     self.get_logger().info("sway right!!!")
 
-        #     status_msg = String()
         #     status_msg.data = "sway_right"
         #     self.pub_status.publish(status_msg)
 
-        elif self.is_in_range(11.5, 15):
+        elif self.is_in_range(11.5, 17):
             self.get_logger().info("go back!!!")
                 
-            if self.set_point.yaw != 90.0:
-                self.set_point.yaw = 90.0
+            if self.set_point.yaw != 180.0:
+                self.set_point.yaw = 180.0
                 self.pub_set_point.publish(self.set_point)
 
-            status_msg = String()
-            status_msg.data = "all"
+            status_msg.data = "boost"
             self.pub_status.publish(status_msg)
 
-        elif self.is_in_range(15, 17): # cari objek n do something
+        elif self.is_in_range(17, 18): # cari objek n do something
             self.pub_multi_pid.publish(self.multi_pid_msg)
             self.get_logger().info("surfacing!!!")
-            if self.set_point.depth != -0.54 and self.set_point.yaw != 270.0:
-                self.set_point.depth = -0.54
-                self.set_point.yaw = 270.0
+            if self.set_point.yaw != 355.0:
+                self.set_point.yaw = 355.0
                 self.pub_set_point.publish(self.set_point)
 
-            status_msg = String()
             status_msg.data = "dpr_ssy"
             self.pub_status.publish(status_msg)
         
-        elif self.is_in_range(17, None): # cari objek n do something
+        elif self.is_in_range(18, None): # cari objek n do something
             if not self.has_published_stop:
                 self.pub_multi_pid.publish(self.multi_pid_msg)
                 self.get_logger().info("stop!!!")
 
-                status_msg = String()
                 status_msg.data = "stop"
                 self.pub_status.publish(status_msg)
                 self.has_published_stop = True
