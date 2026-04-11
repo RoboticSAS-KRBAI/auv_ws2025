@@ -127,7 +127,7 @@ class SubGuidance(Node):
 
     def start_auv(self):
         
-        if self.is_in_range(0, 11.5):
+        if self.is_in_range(0, 11.5): #0, 11.5
             self.get_logger().info("maju!!!")
             self.pub_multi_pid.publish(self.multi_pid_msg)
             self.pub_set_point.publish(self.set_point)
@@ -143,7 +143,7 @@ class SubGuidance(Node):
         #     status_msg.data = "sway_right"
         #     self.pub_status.publish(status_msg)
 
-        elif self.is_in_range(11.5, 15):
+        elif self.is_in_range(11.5, 15): #11.5, 15
             self.get_logger().info("go back!!!")
                 
             if self.set_point.yaw != 90.0:
