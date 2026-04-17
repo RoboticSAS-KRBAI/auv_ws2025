@@ -109,11 +109,31 @@ class MissionAccumulator(Node):
 
         # ========== PID CONFIG ==========
         self.multi_pid = MultiPID()
-        pid_yaw = PID(); pid_yaw.kp = 5.0; pid_yaw.ki = 0.0; pid_yaw.kd = 0.3
-        pid_pitch = PID(); pid_pitch.kp = 15.0; pid_pitch.ki = 0.0; pid_pitch.kd = 2.6
-        pid_roll = PID(); pid_roll.kp = 700.0; pid_roll.ki = 0.0; pid_roll.kd = 0.0
-        pid_depth = PID(); pid_depth.kp = 3000.0; pid_depth.ki = 0.0; pid_depth.kd = 0.0
-        pid_camera = PID(); pid_camera.kp = 1.0; pid_camera.ki = 0.0; pid_camera.kd = 0.0
+        pid_yaw = PID() 
+        pid_yaw.kp = 5.0 # [without kalman filter]
+        pid_yaw.ki = 0.0 
+        pid_yaw.kd = 0.3
+
+        pid_pitch = PID()
+        pid_pitch.kp = 9.0 #9.0(fy1) #15.0 (fy2) 
+        pid_pitch.ki = 0.0
+        pid_pitch.kd = 1.7 #1.7(fy1) #2.6 (fy2)
+
+        pid_roll = PID()
+        pid_roll.kp = 5.0 #2.5 (fy1) #5.0 (fy2)
+        pid_roll.ki = 0.0 
+        pid_roll.kd = 0.9 #0.3 (fy1) #0.9 (fy2)
+
+        pid_depth = PID()
+        pid_depth.kp = 1350.0
+        pid_depth.ki = 0.0
+        pid_depth.kd = 215.0
+
+        pid_camera = PID()
+        pid_camera.kp = 1.0
+        pid_camera.ki = 0.0
+        pid_camera.kd = 0.0
+
         self.multi_pid.pid_yaw = pid_yaw
         self.multi_pid.pid_pitch = pid_pitch
         self.multi_pid.pid_roll = pid_roll
@@ -243,27 +263,31 @@ class MissionAccumulator(Node):
         # PHASE 1: MAJU SCANNING (4 detik, status "all")
         # ==================================================================
         if self.state == STATE_FORWARD_SCAN:
-            self.publish_status("all") #all
-            elapsed = self.get_elapsed()
-            self.get_logger().info(f"[FORWARD_SCAN] Maju scanning... {elapsed:.1f}/4.0s | "
+            if not self.flare_detected:
+                self.publish_status("all") #all
+                elapsed = self.get_elapsed()
+                self.get_logger().info(f"[FORWARD_SCAN] Maju scanning... {elapsed:.1f}/4.0s | "
                                     f"Flare:{self.flare_detected} Gate:{self.gate_detected}")
 
             # Kemungkinan 1 & 2: Terdeteksi orange flare
-            if self.flare_detected:
-                self.get_logger().info("[FORWARD_SCAN] Flare terdeteksi! Mulai aim ke flare.")
-                self.flare_was_on_left = (self.flare_x_diff < 0)
-                self.switch_state(STATE_FLARE_AIM)
-                return
+            if elapsed > 3.0:
+                if self.flare_detected:
+                    self.get_logger().info("[FORWARD_SCAN] Flare terdeteksi! Mulai aim ke flare.")
+                    self.flare_was_on_left = (self.flare_x_diff < 0)
+
+                    self.switch_state(STATE_FLARE_AIM)
+                    return
 
             # Kemungkinan 3: 4 detik habis, tidak ada flare -> langsung cari gate
-            if elapsed >= 4.0:
-                self.get_logger().info("[FORWARD_SCAN] 4s habis, tidak ada flare. Cari gate.")
+            if elapsed > 8.0:
+                self.get_logger().info("[FORWARD_SCAN] 8s habis, tidak ada flare. Cari gate.")
+
                 self.switch_state(STATE_SEARCH_GATE_FORWARD)
                 return
 
-        # ==================================================================
+        # ==========
         # FLARE AIM: dpr_ssy, aim titik tengah kamera ke flare
-        # ==================================================================
+        # ==========
         elif self.state == STATE_FLARE_AIM:
             self.publish_status("dpr_ssy")
             self.get_logger().info(f"[FLARE_AIM] Aiming ke flare... x_diff={self.flare_x_diff}")
@@ -271,6 +295,7 @@ class MissionAccumulator(Node):
             if not self.flare_detected:
                 # Flare hilang saat aim -> anggap tidak ada halangan, cari gate
                 self.get_logger().info("[FLARE_AIM] Flare hilang. Skip ke cari gate.")
+
                 self.switch_state(STATE_SEARCH_GATE_FORWARD)
                 return
 
@@ -280,6 +305,7 @@ class MissionAccumulator(Node):
             # Cek apakah sudah di tengah -> mulai hold
             if self.is_centered(self.flare_x_diff):
                 self.get_logger().info("[FLARE_AIM] Flare di tengah! Mulai hold 3 detik.")
+                
                 self.switch_state(STATE_FLARE_HOLD)
                 return
 
@@ -287,9 +313,9 @@ class MissionAccumulator(Node):
             # Gunakan status "camera_yaw" agar teensy putar ke arah flare
             self.publish_object_difference("orange_flare", self.flare_x_diff, True, self.flare_bbox_size)
 
-        # ==================================================================
+        # ===========
         # FLARE HOLD: Stabilize 3 detik menghadap flare
-        # ==================================================================
+        # ===========
         elif self.state == STATE_FLARE_HOLD:
             self.publish_status("dpr_ssy")
 
@@ -321,9 +347,9 @@ class MissionAccumulator(Node):
                 self.switch_state(STATE_FLARE_SWAY_AVOID)
                 return
 
-        # ==================================================================
+        # =================
         # FLARE SWAY AVOID: Sway menghindari flare selama 2 detik
-        # ==================================================================
+        # =================
         elif self.state == STATE_FLARE_SWAY_AVOID:
             self.publish_status(self.avoid_sway_direction)
             elapsed = self.get_elapsed()
@@ -334,9 +360,9 @@ class MissionAccumulator(Node):
                 self.switch_state(STATE_FLARE_FORWARD_TO_GATE)
                 return
 
-        # ==================================================================
+        # ======================
         # FLARE FORWARD TO GATE: Maju "all" sambil cari gate 5 detik
-        # ==================================================================
+        # ======================
         elif self.state == STATE_FLARE_FORWARD_TO_GATE:
             self.publish_status("all") #all
             elapsed = self.get_elapsed()
@@ -383,9 +409,9 @@ class MissionAccumulator(Node):
                 self.switch_state(STATE_GATE_SPIN_SEARCH)
                 return
 
-        # ==================================================================
+        # ==============
         # GATE AIM SWAY: dpr_ssy, sway ke arah gate sampai tengah
-        # ==================================================================
+        # ==============
         elif self.state == STATE_GATE_AIM_SWAY:
             self.set_point.yaw = self.setpoint_yaw
             self.pub_set_point.publish(self.set_point)
@@ -411,9 +437,9 @@ class MissionAccumulator(Node):
                 self.switch_state(STATE_GATE_HOLD)
                 return
 
-        # ==================================================================
+        # ==========
         # GATE HOLD: Stabilize 3 detik (gate di tengah pakai sway)
-        # ==================================================================
+        # ==========
         elif self.state == STATE_GATE_HOLD:
             self.set_point.yaw = self.setpoint_yaw
             self.pub_set_point.publish(self.set_point)
@@ -447,9 +473,9 @@ class MissionAccumulator(Node):
                     self.switch_state(STATE_GATE_ENTER)
                     return
 
-        # ==================================================================
+        # ===========
         # GATE ENTER: Maju masuk gate (status all)
-        # ==================================================================
+        # ===========
         elif self.state == STATE_GATE_ENTER:
             self.publish_status("all") #all
             self.get_logger().info(f"[GATE_ENTER] Maju masuk gate! Gate detected: {self.gate_detected}")
@@ -471,9 +497,9 @@ class MissionAccumulator(Node):
                 # Gate masih terlihat -> reset lost timer
                 self.gate_lost_time = 0.0
 
-        # ==================================================================
+        # =================
         # GATE SPIN SEARCH: Putar CW/CCW cari gate (max 720 derajat)
-        # ==================================================================
+        # =================
         elif self.state == STATE_GATE_SPIN_SEARCH:
             self.publish_status("dpr_ssy")  # Stabilize dulu sebentar
 
@@ -515,9 +541,9 @@ class MissionAccumulator(Node):
                 self.switch_state(STATE_GATE_SWAY_SEARCH)
                 return
 
-        # ==================================================================
+        # =====================
         # GATE SPIN FOUND SWAY: Gate ditemukan saat spin, sway cepat ke gate
-        # ==================================================================
+        # =====================
         elif self.state == STATE_GATE_SPIN_FOUND_SWAY:
             self.set_point.yaw = self.setpoint_yaw
             self.pub_set_point.publish(self.set_point)
@@ -551,9 +577,9 @@ class MissionAccumulator(Node):
                 self.switch_state(STATE_GATE_SPIN_STABILIZE)
                 return
 
-        # ==================================================================
+        # ====================
         # GATE SPIN STABILIZE: Sway pelan stabilize + hold 3 detik
-        # ==================================================================
+        # ====================
         elif self.state == STATE_GATE_SPIN_STABILIZE:
             self.set_point.yaw = self.setpoint_yaw
             self.pub_set_point.publish(self.set_point)
@@ -583,9 +609,9 @@ class MissionAccumulator(Node):
                     self.switch_state(STATE_GATE_ENTER)
                     return
 
-        # ==================================================================
+        # =================
         # GATE SWAY SEARCH: Sway pelan cari gate (kemungkinan 3)
-        # ==================================================================
+        # =================
         elif self.state == STATE_GATE_SWAY_SEARCH:
             self.set_point.yaw = self.setpoint_yaw
             self.pub_set_point.publish(self.set_point)
