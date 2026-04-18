@@ -12,7 +12,7 @@ from rclpy.node import Node
 
 # ================= CONFIG =================
 IMGSZ = 640
-CAM_ID = '/home/reynard/auv_ws/src/robot_controller/robot_controller/vid/full_mission_2.mp4'
+CAM_ID = 0
 WARMUP_FRAMES = 20
 CONF_THRES = 0.55
 # ==========================================
@@ -28,7 +28,7 @@ class ObjectDetectionNode(Node):
 
         # ===== Load TensorRT Engine =====
         self.model = YOLO(
-            '/home/reynard/auv_ws/src/robot_controller/pt/best-tb.pt',
+            '/home/techsas/auv_ws/src/auv_pkg/pt/full-itb-17mar26(notclean).engine',
             task='detect'
         )
 

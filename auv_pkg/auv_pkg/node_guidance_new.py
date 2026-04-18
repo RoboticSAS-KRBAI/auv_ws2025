@@ -35,6 +35,7 @@ class Guidance(Node):
         self.flare_lock_start           = None
         self.flare_orange_detected_once = False
         self.last_orange_flare_seen     = 0
+        self.lost_time                  = 0
 
         # ── COLOR FLARE CHALLENGE ─────────────────────────────────────────
         self.color_flares_done    = set()
@@ -48,28 +49,28 @@ class Guidance(Node):
         self.last_gate_seen     = 0
 
         # ── SCAN ──────────────────────────────────────────────────────────
-        self.base_yaw   = 360.0
+        self.base_yaw   = 0.0
         self.scan_angle = 30.0
         self.scan_left  = True
 
         # ── SETPOINT ──────────────────────────────────────────────────────
         self.set_point       = SetPoint()
         self.set_point.roll  = 0.0
-        self.set_point.pitch = 0.0
+        self.set_point.pitch = 1.4
         self.set_point.yaw   = self.base_yaw
         self.set_point.yaw = self.set_point.yaw % 360
-        self.set_point.depth = -0.3
+        self.set_point.depth = -0.06
 
         
 
         # ── PID ───────────────────────────────────────────────────────────
         self.multi_pid = MultiPID()
 
-        pid_yaw         = PID(); pid_yaw.kp   = 4.5;    pid_yaw.kd   = 0.3
-        pid_pitch       = PID(); pid_pitch.kp = 15.0;   pid_pitch.kd = 2.6
-        pid_roll        = PID(); pid_roll.kp  = 2.5;    pid_roll.kd  = 0.4
+        pid_yaw         = PID(); pid_yaw.kp   = 4.5;    pid_yaw.kd   = 0.235
+        pid_pitch       = PID(); pid_pitch.kp = 9.0;   pid_pitch.kd = 1.7
+        pid_roll        = PID(); pid_roll.kp  = 1.5;    pid_roll.kd  = 0.3
         pid_depth       = PID(); pid_depth.kp = 1350.0; pid_depth.kd = 215.0
-        pid_camera      = PID(); pid_camera.kp = 1.0
+        pid_camera      = PID(); pid_camera.kp = 0.5
 
         self.multi_pid.pid_yaw    = pid_yaw
         self.multi_pid.pid_pitch  = pid_pitch
@@ -157,7 +158,7 @@ class Guidance(Node):
         # ─── STABILIZE ───────────────────────────────────────────────────
         if self.state == "STABILIZE":
             self.pub_set_point.publish(self.set_point)
-            self.publish_status("dpr_ssy")
+            self.publish_status("all")
 
             if self.elapsed() > 2:
                 self.change_state("SEARCH_ORANGE_FLARE")
@@ -171,25 +172,25 @@ class Guidance(Node):
                     self.flare_lock_start = self.now()
 
                 # Teensy handle centering via x_difference + status "camera"
-                self.publish_status("camera")
+                self.publish_status("camera_yaw")
 
                 lock_time = self.now() - self.flare_lock_start
-                if lock_time > 1.5:
+                if lock_time > 0.2:
                     self.get_logger().info("ORANGE FLARE LOCKED")
                     self.change_state("DODGE_ORANGE_FLARE")
 
             else:
                 self.flare_lock_start = None
 
-                if self.elapsed() <= 5:
+                if self.elapsed() <= 0 :
                     self.get_logger().info("ORANGE FLARE NOT FOUND → SCAN")
-                    self.do_scan()
+                    # self.do_scan()
                 else:
                     self.get_logger().info("ORANGE FLARE NOT FOUND → FORWARD")
                     self.last_scan_time = None
                     self.set_point.yaw = self.base_yaw
                     self.pub_set_point.publish(self.set_point)
-                    self.publish_status("all")
+                    self.publish_status("camera") #all
 
         # ─── DODGE ORANGE FLARE ──────────────────────────────────────────
         elif self.state == "DODGE_ORANGE_FLARE":
@@ -200,14 +201,17 @@ class Guidance(Node):
                 self.flare_orange_detected_once = True
             else:
                 if self.flare_orange_detected_once:
-                    lost_time = self.now() - self.last_orange_flare_seen
-                    if lost_time > 2:
+                    self.lost_time = self.now() - self.last_orange_flare_seen
+                    if self.lost_time > 1:
                         self.get_logger().info("ORANGE FLARE DODGED")
                         self.change_state("COLOR_FLARE_CHALLENGE")
 
         # ─── COLOR FLARE CHALLENGE ────────────────────────────────────────
         elif self.state == "COLOR_FLARE_CHALLENGE":
-            self._handle_color_flare_challenge()
+            if self.lost_time < 2:
+                self.publish_status("all")
+            else:
+                self._handle_color_flare_challenge()
 
         # ─── SEARCH GATE ─────────────────────────────────────────────────
         elif self.state == "SEARCH_GATE":

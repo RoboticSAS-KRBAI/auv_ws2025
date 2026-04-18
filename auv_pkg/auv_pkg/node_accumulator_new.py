@@ -9,7 +9,7 @@ PRIORITY_ORDER = ["orange_flare", "red_flare", "yellow_flare", "blue_flare", "Ga
 
 FRAME_W = 640
 FRAME_H = 480
-FULL_FRAME_THRESHOLD = FRAME_W * FRAME_H * 0.2  # 40% frame = "sudah dekat"
+# FULL_FRAME_THRESHOLD = FRAME_W * FRAME_H * 0.2  # 40% frame = "sudah dekat"
 
 
 class SubAccumulator(Node):
@@ -60,15 +60,14 @@ class SubAccumulator(Node):
                 best_bbox = bbox
 
         if best_bbox is not None:
-            bbox_area = (best_bbox.x_max - best_bbox.x_min) * \
-                        (best_bbox.y_max - best_bbox.y_min)
+            bbox_area = (best_bbox.y_max - best_bbox.y_min) #hasil pekalian area bbox terlalu besar buat tipe data int16, mungkin bisa pake mod 10
+
             center_x = (best_bbox.x_min + best_bbox.x_max) // 2
 
             self.object_difference.object_type = best_bbox.class_name
             self.object_difference.x_difference = center_x - frame_center_x
             self.object_difference.bounding_box_size = bbox_area
-            self.object_difference.is_target = bbox_area >= FULL_FRAME_THRESHOLD
-
+            self.object_difference.is_target = (best_bbox.y_max - best_bbox.y_min)/FRAME_H >= 0.5 #ratio height bbox/frame h >= 0.5 dianggap sudah dekat
             self.get_logger().info(
                 f"Best: {best_bbox.class_name} | "
                 f"x_diff={self.object_difference.x_difference} | "
