@@ -48,7 +48,7 @@ class Guidance(Node):
         self.last_gate_seen     = 0
 
         # ── SCAN ──────────────────────────────────────────────────────────
-        self.base_yaw   = 270.0
+        self.base_yaw   = 360.0
         self.scan_angle = 30.0
         self.scan_left  = True
 
@@ -57,7 +57,10 @@ class Guidance(Node):
         self.set_point.roll  = 0.0
         self.set_point.pitch = 0.0
         self.set_point.yaw   = self.base_yaw
+        self.set_point.yaw = self.set_point.yaw % 360
         self.set_point.depth = -0.3
+
+        
 
         # ── PID ───────────────────────────────────────────────────────────
         self.multi_pid = MultiPID()
@@ -120,7 +123,8 @@ class Guidance(Node):
             self.last_scan_time = now
             self.scan_left = not self.scan_left
 
-        self.set_point.yaw    = self.base_yaw - self.scan_angle if self.scan_left else self.base_yaw + self.scan_angle
+        raw_yaw    = self.base_yaw - self.scan_angle if self.scan_left else self.base_yaw + self.scan_angle
+        self.set_point.yaw = raw_yaw % 360
         self.pub_set_point.publish(self.set_point)
 
     # ═══════════════════════════════════════════════════════════════════════
