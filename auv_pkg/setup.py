@@ -31,7 +31,10 @@ setup(
             "tes_gui_v2 = auv_pkg.gui.tes_gui_v2:main",
             "pub_teensy_serial_simple = auv_pkg.publisher_teensy_serial:main",
             "pid_logger_pub = auv_pkg.pid_logger_pub:main",
-            "guidance_sauvc_qualification = auv_pkg.node_guidance_sauvc_qualification:main"
+            "guidance_sauvc_qualification = auv_pkg.node_guidance_sauvc_qualification:main",
+            "guidance_new = auv_pkg.node_guidance_new:main",
+            "accumulator_new = auv_pkg.node_accumulator_new:main",
+            "object_detection_new = auv_pkg.node_object_detection_new:main"
         ],
     },
 )

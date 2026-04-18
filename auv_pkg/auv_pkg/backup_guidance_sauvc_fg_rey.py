@@ -56,19 +56,19 @@ class SubGuidance(Node):
 
         # Create multiple PID messages
         self.pid_yaw = PID()
-        self.pid_yaw.kp = 4.5   #4.5        #3.0   #15 # Proportional constant for yaw
+        self.pid_yaw.kp = 4.5 #4.5 #3.0   #15 # Proportional constant for yaw
         self.pid_yaw.ki = 0.0   # Integral constant for yaw
-        self.pid_yaw.kd = 0.235 #0.235 #0.3  # Derivative constant for yaw
+        self.pid_yaw.kd = 0.3 #0.3  # Derivative constant for yaw
 
         self.pid_pitch = PID()
-        self.pid_pitch.kp = 12.0 #fy2 12.0 #15.0 (best for fy=2 | 6 Maret 2026) #9.0 #10.0 #700.0  #4500  # Proportional constant for pitch 
-        self.pid_pitch.ki = 0.0           # Integral constant for pitch
-        self.pid_pitch.kd = 1.9  #fy2 1.9 #2.6  (best for fy=2 | 6 Maret 2026) #1.7 #0.32 #1.1   # Derivative constant for pitch
+        self.pid_pitch.kp = 15.0 #15.0 (best for fy=2 | 6 Maret 2026) #9.0 #10.0 #700.0  #4500  # Proportional constant for pitch 
+        self.pid_pitch.ki = 0.0          # Integral constant for pitch
+        self.pid_pitch.kd = 2.6  #2.6  (best for fy=2 | 6 Maret 2026) #1.7 #0.32 #1.1   # Derivative constant for pitch
 
         self.pid_roll = PID()
-        self.pid_roll.kp = 1.5 #2.5 #2.5 #300.0  #700 # Proportional constant for roll
+        self.pid_roll.kp = 2.5 #2.5 #300.0  #700 # Proportional constant for roll
         self.pid_roll.ki = 0.0     # Integral constant for roll
-        self.pid_roll.kd = 0.3 #0.4 #0.3    # Derivative constant for roll
+        self.pid_roll.kd = 0.4 #0.3    # Derivative constant for roll
 
         self.pid_depth = PID()
         self.pid_depth.kp = 1350.0 #1350 #3000  # Proportional constant for depth
