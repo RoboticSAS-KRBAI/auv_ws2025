@@ -26,6 +26,11 @@ class Guidance(Node):
         self.object_class = ""
         self.is_target    = False
 
+        # ── ORANGE FLARE SCAN ─────────────────────────────────────────────
+        self.scan_left      = True
+        self.last_scan_time = None
+        self.scan_dwell     = 2.0 # detik tahan di tiap sisi
+
         # ── ORANGE FLARE TRACKING ─────────────────────────────────────────
         self.flare_lock_start           = None
         self.flare_orange_detected_once = False
@@ -109,11 +114,14 @@ class Guidance(Node):
 
     def do_scan(self):
         """Scan kiri-kanan setiap 2 detik."""
-        if self.elapsed() > 2:
-            self.scan_left        = not self.scan_left
-            self.state_start_time = self.now()
-            self.set_point.yaw    = self.base_yaw - self.scan_angle if self.scan_left else self.base_yaw + self.scan_angle
-            self.pub_set_point.publish(self.set_point)
+        now = self.now()
+
+        if self.last_scan_time is None or now - self.last_scan_time > self.scan_dwell:
+            self.last_scan_time = now
+            self.scan_left = not self.scan_left
+
+        self.set_point.yaw    = self.base_yaw - self.scan_angle if self.scan_left else self.base_yaw + self.scan_angle
+        self.pub_set_point.publish(self.set_point)
 
     # ═══════════════════════════════════════════════════════════════════════
     # SUBSCRIBER CALLBACK
@@ -168,8 +176,16 @@ class Guidance(Node):
 
             else:
                 self.flare_lock_start = None
-                self.publish_status("dpr_ssy")
-                self.do_scan()
+
+                if self.elapsed() <= 5:
+                    self.get_logger().info("ORANGE FLARE NOT FOUND → SCAN")
+                    self.do_scan()
+                else:
+                    self.get_logger().info("ORANGE FLARE NOT FOUND → FORWARD")
+                    self.last_scan_time = None
+                    self.set_point.yaw = self.base_yaw
+                    self.pub_set_point.publish(self.set_point)
+                    self.publish_status("all")
 
         # ─── DODGE ORANGE FLARE ──────────────────────────────────────────
         elif self.state == "DODGE_ORANGE_FLARE":
