@@ -34,7 +34,13 @@ setup(
             "guidance_sauvc_qualification = auv_pkg.node_guidance_sauvc_qualification:main",
             "guidance_new = auv_pkg.node_guidance_new:main",
             "accumulator_new = auv_pkg.node_accumulator_new:main",
-            "object_detection_new = auv_pkg.node_object_detection_new:main"
+            "object_detection_new = auv_pkg.node_object_detection_new:main",
+            "serial_monitoring_safety = auv_pkg.node_monitoring_safety:main",
+            "serial_monitoring_safety_and_bucket = auv_pkg.node_monitoring_safety_and_bucket:main",
+            "accumulator_fadhil = auv_pkg.node_sauvc_accumulator_fadhil:main",
+            "map_sauvc = auv_pkg.node_sauvc_map_new:main",
+            "pub_yaw_only = auv_pkg.node_old_pub_yaw_only:main",
+            "guidance_sauvc_fadhil = auv_pkg.node_sauvc_guidance_fadhil:main",
         ],
     },
 )
