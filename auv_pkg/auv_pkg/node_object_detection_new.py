@@ -12,7 +12,7 @@ from rclpy.node import Node
 
 # ================= CONFIG =================
 IMGSZ = 640
-CAM_ID = 0
+CAM_ID = 0 #opsi: 0 atau 4
 WARMUP_FRAMES = 20
 CONF_THRES = 0.55
 # ==========================================
@@ -32,13 +32,20 @@ class ObjectDetectionNode(Node):
             task='detect'
         )
 
+        self.get_logger().info("USING CAMERA ID = {}".format(CAM_ID))
+
         # ===== Check CUDA =====
-        self.use_cuda = cv2.cuda.getCudaEnabledDeviceCount() > 0
+        try:
+            import torch
+            self.use_cuda = torch.cuda.is_available()
+        except ImportError:
+            self.use_cuda = False
+
         if self.use_cuda:
             self.get_logger().info("✅ CUDA is available. Using GPU acceleration.")
         else:
             self.get_logger().warn("⚠️ CUDA is NOT available. Running on CPU, which may be slow.")
-
+        
         # ===== Camera =====
         self.cap = cv2.VideoCapture(CAM_ID)
         self.cap.set(cv2.CAP_PROP_FOURCC,
@@ -160,7 +167,6 @@ def main(args=None):
         while rclpy.ok():
             node.spin_once()
             rclpy.spin_once(node, timeout_sec=0.0)
-            time.sleep(1/30)  # lock ke 30 FPS hanya jika inferensi terlalu cepat (jangan gunakan jika di live camera)
     except KeyboardInterrupt:
         pass
     finally:
