@@ -41,6 +41,9 @@ setup(
             "map_sauvc = auv_pkg.node_sauvc_map_new:main",
             "pub_yaw_only = auv_pkg.node_old_pub_yaw_only:main",
             "guidance_sauvc_fadhil = auv_pkg.node_sauvc_guidance_fadhil:main",
+            "guidance_flag1 = auv_pkg.node_sauvc_flag1:main",
+            "guidance_flag2 = auv_pkg.node_sauvc_flag2:main",
+            "guidance_flag3 = auv_pkg.node_sauvc_flag3:main",
         ],
     },
 )
