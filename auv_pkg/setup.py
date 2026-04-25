@@ -24,7 +24,7 @@ setup(
             "accumulator = auv_pkg.node_accumulator:main",
             "guidance_teensy = auv_pkg.node_guidance_teensy:main",
             "guidance_mission = auv_pkg.node_guidance_teensy_mission1:main",
-            "guidance_sauvc_fg = auv_pkg.node_guidance_sauvc_fg:main",
+            "guidance_flare_gate = auv_pkg.node_guidance_sauvc_fg:main",
             'object_detection = auv_pkg.node_object_detection:main',
             "pub_teensy = auv_pkg.publisher_teensy:main",
             "tes_gui = auv_pkg.gui.gui_node:main",
