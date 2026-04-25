@@ -5,6 +5,8 @@ import os
 
 from ultralytics import YOLO
 from auv_interfaces.msg import BoundingBox, ObjectDetection
+from sensor_msgs.msg import Image
+from cv_bridge import CvBridge
 
 import rclpy
 from rclpy.node import Node
@@ -12,7 +14,7 @@ from rclpy.node import Node
 
 # ================= CONFIG =================
 IMGSZ = 640
-CAM_ID = 0 #opsi: 0 atau 4
+CAM_ID = 0  # opsi: 0 atau 4
 WARMUP_FRAMES = 20
 CONF_THRES = 0.55
 # ==========================================
@@ -22,9 +24,8 @@ class ObjectDetectionNode(Node):
     def __init__(self):
         super().__init__('node_object_detection')
 
-        self.obj_det_pub = self.create_publisher(
-            ObjectDetection, 'object_detection', 10
-        )
+        self.obj_det_pub = self.create_publisher(ObjectDetection, 'object_detection', 10)
+        self.pub_image = self.create_publisher(Image, '/camera/main_cam', 10)
 
         # ===== Load TensorRT Engine =====
         self.model = YOLO(
@@ -32,7 +33,14 @@ class ObjectDetectionNode(Node):
             task='detect'
         )
 
+        # CvBridge
+        self.bridge = CvBridge()
+
         self.get_logger().info("USING CAMERA ID = {}".format(CAM_ID))
+
+        # Image publish interval
+        self.last_image_pub = time.time()
+        self.image_pub_interval = 0.1  # 10fps
 
         # ===== Check CUDA =====
         try:
@@ -147,10 +155,19 @@ class ObjectDetectionNode(Node):
             cv2.FONT_HERSHEY_SIMPLEX,
             0.8, (0, 0, 255), 2
         )
-        cv2.imshow("YOLO TensorRT ROS2", frame)
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            raise KeyboardInterrupt
+        self.get_logger().info(f"[FPS] {fps:.1f} | Detected {len(msg.bounding_boxes)} objects")
+        # cv2.imshow("YOLO TensorRT ROS2", frame)
+
+        # if cv2.waitKey(1) & 0xFF == ord('q'):
+        #     raise KeyboardInterrupt
+
+        # Publish image 10fps resize 320x240
+        if t0 - self.last_image_pub >= self.image_pub_interval:
+            small_frame = cv2.resize(frame, (320, 240))
+            img_msg = self.bridge.cv2_to_imgmsg(small_frame, encoding='bgr8')
+            self.pub_image.publish(img_msg)
+            self.last_image_pub = t0
 
     def destroy(self):
         self.cap.release()

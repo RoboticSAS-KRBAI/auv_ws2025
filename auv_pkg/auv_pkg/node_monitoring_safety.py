@@ -4,7 +4,6 @@ import serial
 
 from std_msgs.msg import String, Bool
 
-
 class SerialBridgeNode(Node):
     def __init__(self):
         super().__init__('serial_bridge_node')

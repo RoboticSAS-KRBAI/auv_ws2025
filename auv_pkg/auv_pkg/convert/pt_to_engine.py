@@ -2,10 +2,10 @@
 from ultralytics import YOLO
 
 # Load a YOLO11n PyTorch model
-model = YOLO("src/auv_pkg/pt/full-itb-17mar26(notclean).pt")
+model = YOLO("/home/techsas/auv_ws/src/auv_pkg/pt/26feb2026.pt")
 
 # Export the model to TensorRT
 model.export(format="engine", imgsz=640, device=0, half=True) #half=False 30+fps #half=True bisa sampe 50+fps # creates 'yolo11n.engine'
 
 # Load the exported TensorRT model
-trt_model = YOLO("src/auv_pkg/pt/full-itb-17mar26(notclean).engine")
+trt_model = YOLO("/home/techsas/auv_ws/src/auv_pkg/pt/26feb2026.engine")
