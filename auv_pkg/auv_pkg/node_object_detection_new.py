@@ -16,7 +16,7 @@ from rclpy.node import Node
 IMGSZ = 640
 CAM_ID = 0  # opsi: 0 atau 4
 WARMUP_FRAMES = 20
-CONF_THRES = 0.55
+CONF_THRES = 0
 # ==========================================
 
 
@@ -29,7 +29,7 @@ class ObjectDetectionNode(Node):
 
         # ===== Load TensorRT Engine =====
         self.model = YOLO(
-            '/home/techsas/auv_ws/src/auv_pkg/pt/full-itb-17mar26(notclean).engine',
+            '/home/techsas/auv_ws/src/auv_pkg/pt/itb_with_negative_example.engine',
             task='detect'
         )
 
