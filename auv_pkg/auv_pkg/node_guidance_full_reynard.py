@@ -4,7 +4,7 @@ import rclpy
 from rclpy.node import Node
 
 from std_msgs.msg import String
-from auv_interfaces.msg import SetPoint, MultiPID, PID, ObjectDifference
+from auv_interfaces.msg import SetPoint, MultiPID, PID, ObjectDifference, Sensor
 
 
 COLOR_FLARES = {"red_flare", "yellow_flare", "blue_flare"}
@@ -46,12 +46,19 @@ class Guidance(Node):
         self.gate_detected_once = False
         self.last_gate_seen     = 0
 
+        self.gate_sway_state      = None   # "ALIGN" / "SWAY" / "SCAN"
+        self.gate_scan_start_time = None
+        self.gate_sway_direction  = None   # "sway_left" / "sway_right"
+        self.gate_sway_start_time = None
+
+
         # ── SCAN ──────────────────────────────────────────────────────────
         self.base_yaw   = 261.0
-        self.scan_angle = 90.0
+        self.sensor_yaw = self.base_yaw
+        self.scan_angle = 140.0
         self.scan_left  = True
         self.scan_target_yaw = self.base_yaw
-        self.scan_step = .7
+        self.scan_step = .9
 
         # ── SETPOINT ──────────────────────────────────────────────────────
         self.set_point       = SetPoint()
@@ -59,7 +66,7 @@ class Guidance(Node):
         self.set_point.pitch = 0.0
         self.set_point.yaw   = self.base_yaw
         self.set_point.yaw = self.set_point.yaw % 360
-        self.set_point.depth = -0.12
+        self.set_point.depth = -0.14
 
 
         # ── PID ───────────────────────────────────────────────────────────
@@ -69,7 +76,7 @@ class Guidance(Node):
         pid_pitch       = PID(); pid_pitch.kp = 9.0;   pid_pitch.kd = 1.7
         pid_roll        = PID(); pid_roll.kp  = 2.5;    pid_roll.kd  = 0.4
         pid_depth       = PID(); pid_depth.kp = 1350.0; pid_depth.kd = 215.0
-        pid_camera      = PID(); pid_camera.kp = 0.21
+        pid_camera      = PID(); pid_camera.kp = 0.18
 
         self.multi_pid.pid_yaw    = pid_yaw
         self.multi_pid.pid_pitch  = pid_pitch
@@ -87,6 +94,13 @@ class Guidance(Node):
             ObjectDifference,
             'object_difference',
             self.object_difference_callback,
+            10
+        )
+
+        self.create_subscription(
+            Sensor,
+            'sensor',
+            self.sensor_callback,
             10
         )
 
@@ -116,24 +130,22 @@ class Guidance(Node):
         self.pub_status.publish(msg)
 
     def do_scan(self):
-        """Scan kiri-kanan, ganti arah setelah sampai target."""
-        current = self.set_point.yaw
-        diff = self.scan_target_yaw - current
-
-        # Handle wrap-around 360
-        if diff > 180: diff -= 360
+        """Scan berbasis sensor_yaw — lebih presisi."""
+        SCAN_RANGE = 120.0  # derajat kiri-kanan dari base_yaw
+        
+        diff = self.sensor_yaw - self.base_yaw
+        if diff > 180:  diff -= 360
         if diff < -180: diff += 360
-
-        if abs(diff) > self.scan_step:
-            # Belum sampai, terus gerak pelan
-            self.set_point.yaw = (current + self.scan_step * (1 if diff > 0 else -1)) % 360
+        
+        if self.scan_left:
+            if diff > SCAN_RANGE:   # sudah terlalu kiri
+                self.scan_left = False
+            self.publish_status("yaw_left")
         else:
-            # Sudah sampai target, ganti arah
-            self.set_point.yaw = self.scan_target_yaw
-            self.scan_left = not self.scan_left
-            self.scan_target_yaw = (self.base_yaw - self.scan_angle) % 360 if self.scan_left \
-                                else (self.base_yaw + self.scan_angle) % 360
-
+            if diff < -SCAN_RANGE:  # sudah terlalu kanan
+                self.scan_left = True
+            self.publish_status("yaw_right")
+        
         self.pub_set_point.publish(self.set_point)
 
     # ═══════════════════════════════════════════════════════════════════════
@@ -146,6 +158,9 @@ class Guidance(Node):
         self.x_difference  = msg.x_difference
         # x_difference tidak dipakai di sini —
         # teensy yang konsumsi langsung dari topic object_difference
+
+    def sensor_callback(self, msg):
+        self.sensor_yaw = msg.yaw
 
     # ═══════════════════════════════════════════════════════════════════════
     # MAIN LOOP
@@ -184,7 +199,7 @@ class Guidance(Node):
                 self.publish_status("camera")
 
                 lock_time = self.now() - self.flare_lock_start
-                if lock_time > .5:
+                if lock_time > 0.4:
                     self.get_logger().info("ORANGE FLARE LOCKED")
                     self.change_state("DODGE_ORANGE_FLARE")
 
@@ -204,7 +219,7 @@ class Guidance(Node):
             elif self.x_difference <= -100:
                 self.publish_status("camera_sway_forward_right")
             else:
-                self.publish_status("camera_sway_forward_right")  
+                self.publish_status("camera_sway_forward_left")  
 
             if self.object_class == "orange_flare":
                 self.last_orange_flare_seen     = self.now()
@@ -223,7 +238,7 @@ class Guidance(Node):
         # ─── SEARCH GATE ─────────────────────────────────────────────────
         elif self.state == "SEARCH_GATE":
 
-            if self.object_class == "Gate":
+            if self.object_class == "gate":
                 # Teensy handle centering + maju via x_difference + status "camera"
                 self.publish_status("camera")
                 self.last_gate_seen     = self.now()
@@ -270,14 +285,13 @@ class Guidance(Node):
                 self.get_logger().info(
                     f"COLOR FLARE FOUND: {self.current_color_flare}"
                 )
+            elif self.object_class == "gate":
+                self._handle_gate_in_search()
+
             else:
-                if self.object_class == "Gate":
-                    self.publish_status("camera_sway")
-                    if -10 <= self.x_difference <= 10:
-                        self.get_logger().info("GATE CENTER")
-                        self.do_scan()
-                else:
-                    self.do_scan()
+                self.gate_sway_state = None  # reset kalau gate hilang
+                self.do_scan()
+
 
         # ── APPROACH: status "camera" → teensy maju + centering ──────────
         # Tunggu is_target True (bbox penuh), dwell 1.5 detik lalu BACK
@@ -298,19 +312,19 @@ class Guidance(Node):
                     self.get_logger().info(
                         f"FULL FRAME: {self.current_color_flare}, dwell 1.5s"
                     )
-
-                if self.now() - self.color_flare_hit_time > .3:
-                    self._substate_start   = self.now()
-                    self.color_flare_state = "BACK"
+            
+            if self.color_flare_hit_time is not None:
+                if self.now() - self.color_flare_hit_time > 2.0:
+                    self._substate_start      = self.now()
+                    self.color_flare_hit_time = None
+                    self.color_flare_state    = "BACK"
                     self.get_logger().info("DWELL DONE → BACK")
-            else:
-                self.color_flare_hit_time = None  # belum penuh, reset timer
 
         # ── BACK: mundur 3 detik ──────────────────────────────────────────
         elif self.color_flare_state == "BACK":
             self.publish_status("backward")
 
-            if self.now() - self._substate_start > .5:
+            if self.now() - self._substate_start > 2.0:
                 self.color_flares_done.add(self.current_color_flare)
                 self.get_logger().info(
                     f"{self.current_color_flare} DONE | "
@@ -321,6 +335,82 @@ class Guidance(Node):
                 self._substate_start      = None
                 self.color_flare_state    = "SEARCH"
                 self.state_start_time     = self.now()  # reset scan timer
+    
+    # HANDLER GATE DI SEARCH: kalau gate terdeteksi saat scan, langsung align + sway ke arah gate, scan lagi untuk cari color flare, kalau timeout cari gate lagi lalu masuk SEARCH_GATE
+    def _handle_gate_in_search(self):
+
+        # ── ALIGN: set yaw ke base_yaw dulu, tentukan arah sway ──────────
+        if self.gate_sway_state is None:
+            # Tentukan gate di kiri atau kanan dari sensor yaw saat ini
+            diff = self.sensor_yaw - self.base_yaw
+            if diff > 180:  diff -= 360
+            if diff < -180: diff += 360
+
+            # Gate terdeteksi saat yaw menyimpang ke kiri (diff < 0)
+            # artinya gate ada di kiri → sway_left untuk mendekat
+            self.gate_sway_direction = "sway_left" if diff < 0 else "sway_right"
+            self.get_logger().info(
+                f"GATE di {'kiri' if diff < 0 else 'kanan'} "
+                f"(sensor_yaw={self.sensor_yaw:.1f}, base={self.base_yaw})"
+                f" → {self.gate_sway_direction}"
+            )
+
+            # Kembalikan yaw ke base dulu
+            self.set_point.yaw = self.base_yaw
+            self.pub_set_point.publish(self.set_point)
+            self.gate_sway_state      = "SWAY"
+            self.gate_sway_start_time = self.now()
+            self.gate_scan_start_time = None
+            return
+
+        # ── SWAY: gerak ke arah gate sampai center ────────────────────────
+        if self.gate_sway_state == "SWAY":
+            if self.now() - self.gate_sway_start_time > 5.0:
+                self.get_logger().warn("SWAY TIMEOUT 5s, gate tidak terdeteksi → SCAN")
+                self.gate_sway_state      = "SCAN"
+                self.gate_scan_start_time = self.now()
+                return
+            
+            if self.object_class == "gate":
+                # Sudah ketemu gate → biarkan teensy centering
+                self.publish_status("camera_sway")
+
+                if -10 <= self.x_difference <= 10:
+                    self.get_logger().info("GATE CENTER → do_scan")
+                    self.gate_sway_state      = "SCAN"
+                    self.gate_scan_start_time = self.now()
+                    self.do_scan()
+            else:
+                # Belum ketemu gate → gerak buta ke arah yang sudah ditentukan
+                self.publish_status(self.gate_sway_direction)
+
+        # ── SCAN: cari color flare, timeout 10 detik ──────────────────────
+        elif self.gate_sway_state == "SCAN":
+            scan_elapsed = self.now() - self.gate_scan_start_time
+
+            if scan_elapsed > 10.0:
+                # Timeout → cari gate terakhir lalu masuk SEARCH_GATE
+                self.get_logger().info("SCAN TIMEOUT 10s → cari gate lalu SEARCH_GATE")
+                self.gate_sway_state = "FIND_GATE_THEN_GO"
+                return
+
+            if self.object_class in (COLOR_FLARES - self.color_flares_done):
+                # Ketemu color flare → reset gate state, proses normal
+                self.gate_sway_state = None
+                self.gate_scan_start_time = None
+                return  # loop berikutnya akan masuk blok `object_class in remaining`
+
+            self.do_scan()
+
+        # ── FIND_GATE_THEN_GO: putar sampai ketemu gate lalu SEARCH_GATE ──
+        elif self.gate_sway_state == "FIND_GATE_THEN_GO":
+            if self.object_class == "gate":
+                self.get_logger().info("GATE FOUND after timeout → SEARCH_GATE")
+                self.gate_sway_state = None
+                self.gate_scan_start_time = None
+                self.change_state("SEARCH_GATE")
+            else:
+                self.do_scan()
 
 
 # ═══════════════════════════════════════════════════════════════════════════

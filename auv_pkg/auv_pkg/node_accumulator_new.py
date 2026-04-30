@@ -5,7 +5,7 @@ from rclpy.node import Node
 
 # Urutan prioritas — index lebih kecil = lebih prioritas
 # Tinggal tambah nama class di sini kalau mau tambah object baru
-PRIORITY_ORDER = ["orange_flare", "red_flare", "yellow_flare", "blue_flare", "Gate"]
+PRIORITY_ORDER = ["orange_flare", "blue_flare", "red_flare", "yellow_flare", "gate"]
 
 FRAME_W = 640
 FRAME_H = 480
