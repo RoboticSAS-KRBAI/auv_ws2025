@@ -7,6 +7,7 @@ Node ROS2 untuk:
 - Monitoring sensor baterai via serial ESP
 - Publish hasil ke ROS2 topic
 - Subscribe safety_flag dari ROS2
+- Kirim drop ball ke Teensy via ROS2 topic /drop_ball
 """
 
 import os
@@ -17,13 +18,13 @@ import rclpy
 from rclpy.node import Node
 import serial
 
-from std_msgs.msg import String, Bool
+from std_msgs.msg import String, Bool, Int32
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 
 
 # ================= CONFIG =================
-CAM_ID   = 0
+CAM_ID   = 1
 IMGSZ_W  = 640
 IMGSZ_H  = 480
 # ==========================================
@@ -36,7 +37,6 @@ class SerialBridgeNodeAndColorDetection(Node):
 
         # -------------------------------------------------
         # KAMERA — tanpa CAP_V4L2, tanpa thread
-        # Sama persis pendekatan dengan YOLO node
         # -------------------------------------------------
         self.cap = cv2.VideoCapture(CAM_ID)
         self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
@@ -92,11 +92,11 @@ class SerialBridgeNodeAndColorDetection(Node):
         if os.path.exists(serial_port):
             try:
                 self.ser = serial.Serial(serial_port, 115200, timeout=0.1)
-                self.get_logger().info(f"Serial connected: {serial_port}")
+                self.get_logger().info(f"ESP Serial connected: {serial_port}")
             except serial.SerialException as e:
-                self.get_logger().warn(f"Serial open failed: {e}")
+                self.get_logger().warn(f"ESP Serial open failed: {e}")
         else:
-            self.get_logger().warn(f"Serial port {serial_port} not found, skipping serial")
+            self.get_logger().warn(f"ESP port {serial_port} not found, skipping serial")
 
         self.last_serial_read     = time.time()
         self.serial_interval      = 0.1
@@ -112,10 +112,11 @@ class SerialBridgeNodeAndColorDetection(Node):
         # -------------------------------------------------
         # PUBLISHERS
         # -------------------------------------------------
-        self.pub_string = self.create_publisher(String, '/bucket_detected_python', 10)
-        self.pub_bool   = self.create_publisher(Bool,   '/bucket_detected',        10)
-        self.pub_sensor = self.create_publisher(String, 'sensor_string',           10)
-        self.pub_image  = self.create_publisher(Image,  '/camera/bucket_cam',      10)
+        self.pub_string    = self.create_publisher(String, '/bucket_detected_python', 10)
+        self.pub_bool      = self.create_publisher(Bool,   '/bucket_detected',        10)
+        self.pub_sensor    = self.create_publisher(String, 'sensor_string',           10)
+        self.pub_image     = self.create_publisher(Image,  '/camera/bucket_cam',      10)
+        self.pub_drop_ball = self.create_publisher(Int32, '/drop_ball', 10)
 
         # -------------------------------------------------
         # SUBSCRIBERS
@@ -203,7 +204,6 @@ class SerialBridgeNodeAndColorDetection(Node):
         if self.cap is None:
             return
 
-        # Baca frame — persis seperti YOLO node, tanpa thread
         ret, frame = self.cap.read()
         if not ret:
             self.get_logger().warn("Frame not received!")
@@ -216,7 +216,7 @@ class SerialBridgeNodeAndColorDetection(Node):
 
         now = time.time()
 
-        # Baca serial (throttled)
+        # Baca serial ESP (throttled)
         if now - self.last_serial_read >= self.serial_interval:
             self.read_serial()
             self.last_serial_read = now
@@ -272,9 +272,9 @@ class SerialBridgeNodeAndColorDetection(Node):
             self.object_detected = False
             self.drop_bucket     = "False"
 
-        # Kirim ke ESP via serial (throttled)
+        # Kirim drop ball ke Teensy via ROS2 (throttled)
         if now - self.last_serial_send >= self.serial_send_interval:
-            self.send_to_esp(self.object_detected)
+            self.send_drop_ball(self.object_detected)
             self.last_serial_send = now
 
         # Publish ke ROS2
@@ -299,21 +299,23 @@ class SerialBridgeNodeAndColorDetection(Node):
             self.last_image_pub = now
 
     # =========================================================================
-    # ROS2 → SERIAL
+    # PUBLISH DROP BALL → Teensy via ROS2 topic /drop_ball
     # =========================================================================
-    def send_to_esp(self, detected: bool):
-        """Kirim perintah deteksi ke ESP via serial."""
-        if self.ser is None:
-            return
-        try:
-            cmd = b"1\n" if detected else b"0\n"
-            self.ser.write(cmd)
-        except Exception as e:
-            self.get_logger().error(f"[SERIAL] Write error: {e}")
+    # def send_drop_ball(self, detected: bool):
+    #     msg = String()
+    #     msg.data = "TRUE" if detected else "FALSE"
+    #     self.pub_drop_ball.publish(msg)
+    def send_drop_ball(self, detected: bool):
+        msg = Int32()
+        msg.data = 1 if detected else 0
+        self.pub_drop_ball.publish(msg)
 
+    # =========================================================================
+    # SAFETY CALLBACK
+    # =========================================================================
     def safety_callback(self, msg: Bool):
-        """Callback dari topic safety_flag, forward ke ESP."""
-        self.send_to_esp(msg.data)
+        """Callback dari topic safety_flag, forward ke Teensy via ROS2."""
+        self.send_drop_ball(msg.data)
 
     # =========================================================================
     # CLEANUP

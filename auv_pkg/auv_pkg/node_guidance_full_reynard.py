@@ -32,8 +32,10 @@ class Guidance(Node):
 
         # ── ORANGE FLARE TRACKING ─────────────────────────────────────────
         self.flare_lock_start           = None
-        self.flare_orange_detected_once = False
+        self.flare_orange_is_target_once   = False  # ← untuk SEARCH: sudah pernah is_target
+        self.flare_orange_detected_once    = False  # ← untuk DODGE: sudah pernah detect
         self.last_orange_flare_seen     = 0
+        
 
         # ── COLOR FLARE CHALLENGE ─────────────────────────────────────────
         self.color_flares_done    = set()
@@ -41,6 +43,8 @@ class Guidance(Node):
         self.color_flare_hit_time = None        # kapan is_target pertama True
         self.color_flare_state    = "SEARCH"    # sub-state: SEARCH / APPROACH / BACK
         self._substate_start      = None
+        self.color_flare_locked   = False
+        self._is_target_since     = None
 
         # ── GATE TRACKING ─────────────────────────────────────────────────
         self.gate_detected_once = False
@@ -50,6 +54,11 @@ class Guidance(Node):
         self.gate_scan_start_time = None
         self.gate_sway_direction  = None   # "sway_left" / "sway_right"
         self.gate_sway_start_time = None
+
+        # ── SEARCH FLARE ─────────────────────────────────────────────────
+        self.search_state = None  # "SCAN"
+        self.hit_confirmed = False
+        self.hit_start_time = None
 
 
         # ── SCAN ──────────────────────────────────────────────────────────
@@ -66,7 +75,7 @@ class Guidance(Node):
         self.set_point.pitch = 0.0
         self.set_point.yaw   = self.base_yaw
         self.set_point.yaw = self.set_point.yaw % 360
-        self.set_point.depth = -0.14
+        self.set_point.depth = -0.12
 
 
         # ── PID ───────────────────────────────────────────────────────────
@@ -130,23 +139,23 @@ class Guidance(Node):
         self.pub_status.publish(msg)
 
     def do_scan(self):
-        """Scan berbasis sensor_yaw — lebih presisi."""
-        SCAN_RANGE = 120.0  # derajat kiri-kanan dari base_yaw
+        # """Scan berbasis sensor_yaw — lebih presisi."""
+        # SCAN_RANGE = 120.0  # derajat kiri-kanan dari base_yaw
         
-        diff = self.sensor_yaw - self.base_yaw
-        if diff > 180:  diff -= 360
-        if diff < -180: diff += 360
+        # diff = self.sensor_yaw - self.base_yaw
+        # if diff > 180:  diff -= 360
+        # if diff < -180: diff += 360
         
-        if self.scan_left:
-            if diff > SCAN_RANGE:   # sudah terlalu kiri
-                self.scan_left = False
-            self.publish_status("yaw_left")
-        else:
-            if diff < -SCAN_RANGE:  # sudah terlalu kanan
-                self.scan_left = True
-            self.publish_status("yaw_right")
+        # if self.scan_left:
+        #     if diff > SCAN_RANGE:   # sudah terlalu kiri
+        #         self.scan_left = False
+        #     self.publish_status("yaw_left")
+        # else:
+        #     if diff < -SCAN_RANGE:  # sudah terlalu kanan
+        #         self.scan_left = True
+        #     self.publish_status("yaw_right")
+        self.publish_status("yaw_left")
         
-        self.pub_set_point.publish(self.set_point)
 
     # ═══════════════════════════════════════════════════════════════════════
     # SUBSCRIBER CALLBACK
@@ -199,18 +208,53 @@ class Guidance(Node):
                 self.publish_status("camera")
 
                 lock_time = self.now() - self.flare_lock_start
-                if lock_time > 0.4:
+                if lock_time > 0.5:
                     self.get_logger().info("ORANGE FLARE LOCKED")
                     self.change_state("DODGE_ORANGE_FLARE")
 
             else:
                 self.flare_lock_start = None
 
-                self.get_logger().info("ORANGE FLARE NOT FOUND → FORWARD")
-                self.last_scan_time = None
-                self.set_point.yaw = self.base_yaw
-                self.pub_set_point.publish(self.set_point)
-                self.publish_status("all")
+                if self.elapsed() <= 5:
+                    self.get_logger().info("ORANGE FLARE NOT FOUND → SCAN")
+                    self.publish_status("all")
+                else:
+                    self.get_logger().info("ORANGE FLARE NOT FOUND → FORWARD")
+                    self.last_scan_time = None
+                    self.set_point.yaw = self.base_yaw
+                    self.pub_set_point.publish(self.set_point)
+                    self.publish_status("all")
+
+        # elif self.state == "SEARCH_ORANGE_FLARE":
+        #     if self.object_class == "orange_flare":
+
+        #         if self.flare_lock_start is None:
+        #             self.flare_lock_start = self.now()
+
+        #         if self.is_target:
+        #             self.flare_orange_is_target_once = True  # ← pakai yang baru
+
+        #         if self.flare_orange_is_target_once:
+        #             self.publish_status("dpr_ssy")
+
+        #             lock_time = self.now() - self.flare_lock_start
+        #             if lock_time > .3:
+        #                 self.get_logger().info("ORANGE FLARE LOCKED")
+        #                 self.change_state("DODGE_ORANGE_FLARE")
+        #         else:
+        #             self.publish_status("camera")
+
+        #     else:
+        #         self.flare_lock_start            = None
+        #         self.flare_orange_is_target_once = False  # ← reset yang baru, bukan yang lama
+
+        #         if self.elapsed() <= 5:
+        #             self.publish_status("all")
+        #         else:
+        #             self.set_point.yaw = self.base_yaw
+        #             self.pub_set_point.publish(self.set_point)
+        #             self.publish_status("all")
+
 
         # ─── DODGE ORANGE FLARE ──────────────────────────────────────────
         elif self.state == "DODGE_ORANGE_FLARE":
@@ -237,7 +281,8 @@ class Guidance(Node):
 
         # ─── SEARCH GATE ─────────────────────────────────────────────────
         elif self.state == "SEARCH_GATE":
-
+            self.publish_status("camera")
+            
             if self.object_class == "gate":
                 # Teensy handle centering + maju via x_difference + status "camera"
                 self.publish_status("camera")
@@ -275,50 +320,155 @@ class Guidance(Node):
             return
 
         # ── SEARCH ───────────────────────────────────────────────────────
-        if self.color_flare_state == "SEARCH":
-            self.publish_status("dpr_ssy")
+        # if self.color_flare_state == "SEARCH":
+        #     if self.search_state is None:
+        #         self.publish_status("dpr_ssy")
+        #         self.search_state = "SCAN"
 
+        #     if self.object_class in remaining:
+        #         self.current_color_flare = self.object_class
+        #         self.color_flare_state   = "APPROACH"
+        #         self.color_flare_hit_time = None
+        #         self.search_state = None  # reset search sub-state
+        #         self.get_logger().info(
+        #             f"COLOR FLARE FOUND: {self.current_color_flare}"
+        #         )
+
+        #     elif self.object_class == "gate":
+        #         self._handle_gate_in_search()
+
+        #     else:
+        #         self.gate_sway_state = None  # reset kalau gate hilang
+        #         if self.search_state == "SCAN":
+        #             self.do_scan()
+
+        if self.color_flare_state == "SEARCH":
             if self.object_class in remaining:
-                self.current_color_flare = self.object_class
-                self.color_flare_state   = "APPROACH"
+                self.current_color_flare  = self.object_class
+                self.color_flare_state    = "APPROACH"
                 self.color_flare_hit_time = None
-                self.get_logger().info(
-                    f"COLOR FLARE FOUND: {self.current_color_flare}"
-                )
+                self.color_flare_locked   = True
+                self.get_logger().info(f"COLOR FLARE FOUND: {self.current_color_flare}")
+
             elif self.object_class == "gate":
                 self._handle_gate_in_search()
 
             else:
-                self.gate_sway_state = None  # reset kalau gate hilang
+                self.gate_sway_state = None
                 self.do_scan()
-
 
         # ── APPROACH: status "camera" → teensy maju + centering ──────────
         # Tunggu is_target True (bbox penuh), dwell 1.5 detik lalu BACK
-        elif self.color_flare_state == "APPROACH":
-            self.publish_status("camera")
+        # elif self.color_flare_state == "APPROACH":
+        #     self.publish_status("camera")
 
-            if self.object_class != self.current_color_flare:
-                # Flare hilang dari frame → balik cari lagi
-                self.color_flare_state    = "SEARCH"
-                self.current_color_flare  = None
-                self.color_flare_hit_time = None
-                self.get_logger().warn("COLOR FLARE LOST → SEARCH")
+        #     if self.object_class != self.current_color_flare:
+        #         # Flare hilang dari frame → balik cari lagi
+        #         self.color_flare_state    = "SEARCH"
+        #         self.current_color_flare  = None
+        #         self.color_flare_hit_time = None
+        #         self.get_logger().warn("COLOR FLARE LOST → SEARCH")
+        #         return
+
+        #     if self.is_target:
+        #         if self.color_flare_hit_time is None:
+        #             self.color_flare_hit_time = self.now()
+        #             self.get_logger().info(
+        #                 f"FULL FRAME: {self.current_color_flare}, dwell 1.5s"
+        #             )
+            
+        #     if self.color_flare_hit_time is not None:
+        #         if self.now() - self.color_flare_hit_time > 2.0:
+        #             self._substate_start      = self.now()
+        #             self.color_flare_hit_time = None
+        #             self.color_flare_state    = "BACK"
+        #             self.get_logger().info("DWELL DONE → BACK")
+
+        # elif self.color_flare_state == "APPROACH":
+        #     if self.color_flare_hit_time is not None:
+        #         # Sudah konfirmasi nabrak — stop, tunggu dwell selesai
+        #         self.publish_status("camera")
+
+        #         if self.now() - self.color_flare_hit_time > 3.0:
+        #             self._substate_start      = self.now()
+        #             self.color_flare_hit_time = None
+        #             self.color_flare_state    = "BACK"
+        #             self.color_flare_locked   = False
+        #             self.get_logger().info("DWELL DONE → BACK")
+        #         return
+
+        #     # Belum konfirmasi nabrak — terus maju
+        #     self.publish_status("camera")
+
+        #     if self.object_class == self.current_color_flare:
+        #         self.color_flare_locked = True
+
+        #         if self.is_target:
+        #             # is_target True → mulai / lanjutkan hitung durasi
+        #             if self._is_target_since is None:
+        #                 self._is_target_since = self.now()
+        #                 self.get_logger().info(
+        #                     f"IS_TARGET: {self.current_color_flare}, konfirmasi 0.5s..."
+        #                 )
+        #             elif self.now() - self._is_target_since > 0.5:
+        #                 # Sudah 0.5 detik is_target → anggap nabrak, mulai dwell
+        #                 self.color_flare_hit_time = self.now()
+        #                 self._is_target_since     = None
+        #                 self.get_logger().info(
+        #                     f"FULL FRAME CONFIRMED: {self.current_color_flare}, dwell 2s"
+        #                 )
+        #         else:
+        #             # is_target hilang sesaat → reset konfirmasi tapi tetap maju
+        #             self._is_target_since = None
+
+        #     elif not self.color_flare_locked:
+        #         # Flare benar-benar hilang dari frame dan belum pernah locked
+        #         self.color_flare_state   = "SEARCH"
+        #         self.current_color_flare = None
+        #         self._is_target_since    = None
+        #         self.get_logger().warn("COLOR FLARE LOST → SEARCH")
+
+        elif self.color_flare_state == "APPROACH":
+
+            # ─── SUDAH TRIGGER → JALANKAN SEQUENCE ───
+            if self.hit_confirmed:
+                elapsed = self.now() - self.hit_start_time
+
+                if elapsed < 1.0:
+                    self.publish_status("dpr")  # diam 1 detik
+
+                elif elapsed < 3.0:
+                    self.publish_status("camera")  # maju 2 detik
+
+                else:
+                    self._substate_start   = self.now()
+                    self.color_flare_state = "BACK"
+                    self.hit_confirmed     = False
+                    self.get_logger().info("SEQUENCE DONE → BACK")
+
                 return
 
-            if self.is_target:
-                if self.color_flare_hit_time is None:
-                    self.color_flare_hit_time = self.now()
+            # ─── BELUM TRIGGER → MASIH APPROACH ───
+            self.publish_status("camera")
+
+            if self.object_class == self.current_color_flare:
+
+                if self.is_target:
+                    # trigger SEKALI
+                    self.hit_confirmed = True
+                    self.hit_start_time = self.now()
+
                     self.get_logger().info(
-                        f"FULL FRAME: {self.current_color_flare}, dwell 1.5s"
+                        f"HIT CONFIRMED: {self.current_color_flare}"
                     )
-            
-            if self.color_flare_hit_time is not None:
-                if self.now() - self.color_flare_hit_time > 2.0:
-                    self._substate_start      = self.now()
-                    self.color_flare_hit_time = None
-                    self.color_flare_state    = "BACK"
-                    self.get_logger().info("DWELL DONE → BACK")
+
+            # Flare hilang dari frame — hanya reset jika BELUM pernah locked
+            elif not self.color_flare_locked:
+                self.color_flare_state   = "SEARCH"
+                self.current_color_flare = None
+                self._is_target_since    = None
+                self.get_logger().warn("COLOR FLARE LOST → SEARCH")
+            # Kalau sudah locked → tetap camera, tidak reset
 
         # ── BACK: mundur 3 detik ──────────────────────────────────────────
         elif self.color_flare_state == "BACK":
@@ -333,6 +483,7 @@ class Guidance(Node):
                 self.current_color_flare  = None
                 self.color_flare_hit_time = None
                 self._substate_start      = None
+                self._is_target_since     = None   
                 self.color_flare_state    = "SEARCH"
                 self.state_start_time     = self.now()  # reset scan timer
     
@@ -379,28 +530,27 @@ class Guidance(Node):
                     self.get_logger().info("GATE CENTER → do_scan")
                     self.gate_sway_state      = "SCAN"
                     self.gate_scan_start_time = self.now()
-                    self.do_scan()
             else:
                 # Belum ketemu gate → gerak buta ke arah yang sudah ditentukan
                 self.publish_status(self.gate_sway_direction)
 
         # ── SCAN: cari color flare, timeout 10 detik ──────────────────────
         elif self.gate_sway_state == "SCAN":
-            scan_elapsed = self.now() - self.gate_scan_start_time
+            self.do_scan()
 
-            if scan_elapsed > 10.0:
-                # Timeout → cari gate terakhir lalu masuk SEARCH_GATE
-                self.get_logger().info("SCAN TIMEOUT 10s → cari gate lalu SEARCH_GATE")
-                self.gate_sway_state = "FIND_GATE_THEN_GO"
-                return
+            scan_elapsed = self.now() - self.gate_scan_start_time
 
             if self.object_class in (COLOR_FLARES - self.color_flares_done):
                 # Ketemu color flare → reset gate state, proses normal
-                self.gate_sway_state = None
+                self.gate_sway_state      = None
                 self.gate_scan_start_time = None
                 return  # loop berikutnya akan masuk blok `object_class in remaining`
 
-            self.do_scan()
+            if scan_elapsed > 10.0:
+                # Timeout, tidak ketemu color flare → cari gate lalu SEARCH_GATE
+                self.get_logger().info("SCAN TIMEOUT 10s → FIND_GATE_THEN_GO")
+                self.gate_sway_state = "FIND_GATE_THEN_GO"
+
 
         # ── FIND_GATE_THEN_GO: putar sampai ketemu gate lalu SEARCH_GATE ──
         elif self.gate_sway_state == "FIND_GATE_THEN_GO":
