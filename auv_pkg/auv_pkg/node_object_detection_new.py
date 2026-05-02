@@ -14,7 +14,7 @@
 
 # # ================= CONFIG =================
 # IMGSZ = 640
-# CAM_ID = 5  # opsi: 0 atau 4
+# CAM_ID = 4 # opsi: 0 atau 4
 # WARMUP_FRAMES = 20
 # CONF_THRES = 0.5
 # # ==========================================

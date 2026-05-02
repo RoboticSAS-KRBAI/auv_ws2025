@@ -41,7 +41,8 @@ setup(
             "map_sauvc = auv_pkg.node_sauvc_map_new:main",
             "pub_yaw_only = auv_pkg.node_old_pub_yaw_only:main",
             "guidance_sauvc_fadhil = auv_pkg.node_sauvc_guidance_fadhil:main",
-            "guidance_full_reynard = auv_pkg.node_guidance_full_reynard:main"
+            "guidance_full_reynard = auv_pkg.node_guidance_full_reynard:main",
+            "bucket_detection = auv_pkg.node_bucket:main"
         ],
     },
 )
