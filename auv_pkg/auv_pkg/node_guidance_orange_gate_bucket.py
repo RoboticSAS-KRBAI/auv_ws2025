@@ -17,7 +17,7 @@ class Guidance(Node):
         self.state_start_time = None
 
         # DELAY
-        self.param_delay = 7.0  # ← ganti nilai ini sesuai kebutuhan (detik)
+        self.param_delay = 5.0  # ← ganti nilai ini sesuai kebutuhan (detik)
 
         # STATE
         self.state = "INIT"
@@ -41,7 +41,7 @@ class Guidance(Node):
         self.last_gate_seen = 0
 
         # DODGE ORANGE FLARE
-        self.status_dodge_flare = "camera_sway_forward_left"
+        self.status_dodge_flare = "camera_sway_right_forward"
 
         # BUCKET TRACKING
         self.bucket_detected_once = False
@@ -253,14 +253,14 @@ class Guidance(Node):
 
         # DODGE FLARE
         elif self.state == "DODGE_ORANGE_FLARE":
-            self.status_dodge_flare = "camera_sway_forward_left"
-            self.publish_status("camera_sway_forward_left")
+            self.status_dodge_flare = "sway_right_forward"
+            self.publish_status("sway_right_forward")
             # if self.x_difference >= 100:
             #     self.status_dodge_flare = "camera_sway_forward_left"
             #     self.publish_status("camera_sway_forward_left")
             # elif self.x_difference < 100:
-            #     self.status_dodge_flare = "camera_sway_forward_right"
-            #     self.publish_status("camera_sway_forward_right")
+            #     self.status_dodge_flare = "camera_sway_right_forward"
+            #     self.publish_status("camera_sway_right_forward")
             # else:
             #     self.status_dodge_flare = "camera_sway_forward_left"
             #     self.publish_status("camera_sway_forward_left")
@@ -274,7 +274,7 @@ class Guidance(Node):
                 
                     lost_time = self.now() - self.last_orange_flare_seen
 
-                    if lost_time > 3:
+                    if lost_time > 9:
                         self.get_logger().info("FLARE DODGED")
                         self.change_state("BALANCE_GATE")
 
@@ -287,11 +287,12 @@ class Guidance(Node):
                 if -10 <= self.x_difference <= 10:
                     self.get_logger().info("GATE DETECTED")
                     self.change_state("GO_GATE")
-            # else:
-            #     if self.status_dodge_flare == "camera_sway_forward_left":
-            #         self.publish_status("sway_left")
-            #     else:
-            #         self.publish_status("sway_right")
+            else:
+                # self.publish_status("all")
+                if self.status_dodge_flare == "sway_right_forward":
+                    self.publish_status("sway_right")
+                else:
+                    self.publish_status("sway_left")
 
         # SEARCH GATE
         elif self.state == "GO_GATE":
@@ -334,8 +335,8 @@ class Guidance(Node):
                     self.change_state("SURFACE")
                 else :
                     # self.publish_status("all_slow")
-                    if self.status_dodge_flare == "camera_sway_forward_right":
-                        self.publish_status("sway_right")
+                    if self.status_dodge_flare == "sway_right_forward":
+                        self.publish_status("sway_left")
                     else:
                         self.publish_status("sway_right")
         

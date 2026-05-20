@@ -9,7 +9,7 @@ PRIORITY_ORDER = ["orange_flare", "red_flare", "blue_flare", "yellow_flare", "ga
 
 FRAME_W = 640
 FRAME_H = 480
-FULL_FRAME_THRESHOLD = FRAME_W * FRAME_H * 0.02  # 2% frame = "sudah dekat"
+FULL_FRAME_THRESHOLD = FRAME_W * FRAME_H * 0.05  # 5% frame = "sudah dekat"
 
 
 class SubAccumulator(Node):

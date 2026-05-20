@@ -195,9 +195,9 @@
 #     main()
 
 #!/usr/bin/env python3
+
 import cv2
 import time
-import os
 
 from ultralytics import YOLO
 from auv_interfaces.msg import BoundingBox, ObjectDetection
@@ -209,84 +209,97 @@ from rclpy.node import Node
 
 
 # ================= CONFIG =================
-IMGSZ        = 640
-CAM_PRIORITY = [4, 5, 6, 7]   # urutan prioritas: coba 4 dulu, kalau gagal coba 5
-WARMUP_FRAMES = 20
-CONF_THRES   = 0.5
+IMGSZ         = 640
+CONF_THRES    = 0.5
+CAM_DEVICE    = "/dev/video4"
+VIDEO_PATH    = "/home/techsas/auv_ws/src/auv_pkg/auv_pkg/vid/gate_lamp_kolam_cewe.mp4"
+# /home/techsas/auv_ws/src/auv_pkg/auv_pkg/vid/gate_lamp_kolam_cewe.mp4
+VIDEO_PATH2    = "/home/techsas/auv_ws/src/auv_pkg/auv_pkg/vid/blue_flare_lamp_kolam_cewe.mp4"
+
+WARMUP_FRAMES = 10
 # ==========================================
 
 
-def open_camera(cam_ids: list) -> tuple:
-    """
-    Coba buka kamera dari daftar id secara berurutan.
-    Return (cap, cam_id) dari kamera pertama yang berhasil di-read.
-    Return (None, -1) kalau semua gagal.
-    """
-    for cam_id in cam_ids:
-        cap = cv2.VideoCapture(cam_id)
-        cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
-        cap.set(cv2.CAP_PROP_FRAME_WIDTH,  IMGSZ)
-        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, IMGSZ)
-        cap.set(cv2.CAP_PROP_FPS, 30)
-        cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
-
-        if cap.isOpened():
-            ret, _ = cap.read()
-            if ret:
-                return cap, cam_id
-
-        cap.release()
-
-    return None, -1
-
-
 class ObjectDetectionNode(Node):
+
     def __init__(self):
         super().__init__('node_object_detection')
 
-        self.obj_det_pub = self.create_publisher(ObjectDetection, 'object_detection', 10)
-        self.pub_image   = self.create_publisher(Image, '/camera/main_cam', 10)
+        # ================= ROS PUB =================
+        self.obj_det_pub = self.create_publisher(
+            ObjectDetection,
+            'object_detection',
+            10
+        )
 
-        # ===== Load TensorRT Engine =====
+        self.pub_image = self.create_publisher(
+            Image,
+            '/camera/main_cam',
+            10
+        )
+
+        self.bridge = CvBridge()
+
+        # ================= YOLO =================
+        self.get_logger().info("Loading TensorRT engine...")
+
         self.model = YOLO(
             '/home/techsas/auv_ws/src/auv_pkg/pt/telkom12mei_best.engine',
             task='detect'
         )
 
-        # CvBridge
-        self.bridge = CvBridge()
+        self.get_logger().info("TensorRT loaded")
 
-        # Image publish interval
-        self.last_image_pub     = time.time()
-        self.image_pub_interval = 0.1  # 10fps
+        # ================= CAMERA =================
+        self.get_logger().info(f"Opening camera: {CAM_DEVICE}")
 
-        # ===== Check CUDA =====
-        try:
-            import torch
-            self.use_cuda = torch.cuda.is_available()
-        except ImportError:
-            self.use_cuda = False
+        # self.cap = cv2.VideoCapture(
+        #     CAM_DEVICE,
+        #     cv2.CAP_V4L2
+        # )
 
-        if self.use_cuda:
-            self.get_logger().info("✅ CUDA is available. Using GPU acceleration.")
-        else:
-            self.get_logger().warn("⚠️ CUDA is NOT available. Running on CPU, which may be slow.")
+        self.cap = cv2.VideoCapture(
+            VIDEO_PATH
+        )
 
-        # ===== Camera — auto fallback =====
-        self.cap, self.cam_id = open_camera(CAM_PRIORITY)
 
-        if self.cap is None:
+        if not self.cap.isOpened():
+            raise RuntimeError(f"Cannot open camera {CAM_DEVICE}")
+
+        # ===== Camera Settings =====
+        self.cap.set(
+            cv2.CAP_PROP_FOURCC,
+            cv2.VideoWriter_fourcc(*'MJPG')
+        )
+
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+        self.cap.set(cv2.CAP_PROP_FPS, 30)
+
+        # buffer kecil supaya latency kecil
+        self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+
+        # optional untuk Jetson
+        self.cap.set(cv2.CAP_PROP_CONVERT_RGB, 1)
+
+        # ================= TEST FRAME =================
+        ret, frame = self.cap.read()
+
+        if not ret:
             raise RuntimeError(
-                f"❌ Cannot open any camera from list {CAM_PRIORITY}. "
-                "Pastikan kamera terhubung dan tidak dipakai proses lain."
+                f"Camera {CAM_DEVICE} opened but cannot read frame"
             )
 
-        self.get_logger().info(f"✅ USING CAMERA ID = {self.cam_id}")
+        self.get_logger().info("Camera ready")
 
-        # ===== Warmup =====
-        self.get_logger().warn("🔥 Warming up TensorRT...")
+        # ================= WARMUP =================
+        self.get_logger().warn("TensorRT warmup...")
+
         for _ in range(WARMUP_FRAMES):
+
+            self.cap.grab()
             ret, frame = self.cap.read()
+
             if ret:
                 self.model.predict(
                     frame,
@@ -294,169 +307,266 @@ class ObjectDetectionNode(Node):
                     device=0,
                     verbose=False
                 )
-        self.get_logger().warn("✅ Warmup done")
 
-        # Counter untuk deteksi kamera disconnect saat runtime
-        self._fail_count     = 0
-        self._max_fail_count = 10  # setelah 10 frame gagal berturut-turut → coba reconnect
+        self.get_logger().warn("Warmup done")
 
-    # =========================================================================
-    # RECONNECT — dipanggil kalau kamera tiba-tiba disconnect saat runtime
-    # =========================================================================
-    def _try_reconnect(self):
-        self.get_logger().warn(
-            f"⚠️ Camera id={self.cam_id} lost! Trying to reconnect from {CAM_PRIORITY}..."
+        # ================= IMAGE PUB =================
+        self.last_image_pub = time.time()
+        self.image_pub_interval = 0.1
+
+        # ================= LOGGER TIMER =================
+        self.last_log_time = time.time()
+
+        # ================= FAIL COUNTER =================
+        self.fail_count = 0
+        self.max_fail_count = 10
+
+    # ==================================================
+    # RECONNECT CAMERA
+    # ==================================================
+    def reconnect_camera(self):
+
+        self.get_logger().warn("Camera disconnected, reconnecting...")
+
+        try:
+            self.cap.release()
+        except:
+            pass
+
+        time.sleep(1)
+
+        # self.cap = cv2.VideoCapture(
+        #     CAM_DEVICE,
+        #     cv2.CAP_V4L2
+        # )
+
+        self.cap = cv2.VideoCapture(
+            VIDEO_PATH2
         )
 
-        if self.cap is not None:
-            self.cap.release()
-            self.cap = None
+        self.cap.set(
+            cv2.CAP_PROP_FOURCC,
+            cv2.VideoWriter_fourcc(*'MJPG')
+        )
 
-        cap, cam_id = open_camera(CAM_PRIORITY)
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+        self.cap.set(cv2.CAP_PROP_FPS, 30)
+        self.cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
 
-        if cap is not None:
-            self.cap     = cap
-            self.cam_id  = cam_id
-            self._fail_count = 0
-            self.get_logger().info(f"✅ Reconnected to camera id={self.cam_id}")
+        if self.cap.isOpened():
+            self.get_logger().info("Camera reconnected")
+            self.fail_count = 0
         else:
-            self.get_logger().error(
-                f"❌ Reconnect failed. No camera available from {CAM_PRIORITY}."
-            )
+            self.get_logger().error("Reconnect failed")
 
-    # =========================================================================
-    # SPIN ONCE
-    # =========================================================================
+    # ==================================================
+    # MAIN LOOP
+    # ==================================================
     def spin_once(self):
+
         if self.cap is None:
-            time.sleep(0.5)
-            self._try_reconnect()
+            self.reconnect_camera()
             return
+
+        # buang frame lama
+        self.cap.grab()
 
         ret, frame = self.cap.read()
 
-        # Deteksi kamera disconnect saat runtime
+        # ================= CAMERA FAIL =================
         if not ret:
-            self._fail_count += 1
-            self.get_logger().warn(
-                f"Frame not received (fail {self._fail_count}/{self._max_fail_count})"
-            )
-            if self._fail_count >= self._max_fail_count:
-                self._try_reconnect()
+
+            self.fail_count += 1
+
+            if self.fail_count >= self.max_fail_count:
+                self.reconnect_camera()
+
             return
 
-        # Reset fail counter kalau frame berhasil
-        self._fail_count = 0
+        self.fail_count = 0
 
-        frame_cx = IMGSZ  // 2
-        frame_cy = 480    // 2
-        cv2.circle(frame, (frame_cx, frame_cy), 3, (255, 0, 0), -1)
+        # ================= CENTER POINT =================
+        frame_cx = 640 // 2
+        frame_cy = 480 // 2
 
-        # ===== Inference =====
-        t0      = time.time()
+        cv2.circle(
+            frame,
+            (frame_cx, frame_cy),
+            3,
+            (255, 0, 0),
+            -1
+        )
+
+        # ================= YOLO =================
+        t0 = time.time()
+
         results = self.model.predict(
             frame,
             imgsz=IMGSZ,
             device=0,
             verbose=False
         )
-        infer_time = time.time() - t0
-        fps        = 1.0 / infer_time if infer_time > 0 else 0.0
 
-        # ===== Build ROS Message + Draw =====
+        infer_time = time.time() - t0
+
+        fps = 1.0 / infer_time if infer_time > 0 else 0.0
+
+        # ================= BUILD ROS MSG =================
         msg = ObjectDetection()
 
         for r in results:
+
             for box in r.boxes:
+
                 conf = float(box.conf[0])
+
                 if conf < CONF_THRES:
                     continue
 
-                x1, y1, x2, y2 = map(int, box.xyxy[0])
-                cls             = int(box.cls[0])
-                label           = self.model.names[cls]
+                x1, y1, x2, y2 = map(
+                    int,
+                    box.xyxy[0]
+                )
 
-                # Draw bounding box
-                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                cls = int(box.cls[0])
+
+                label = self.model.names[cls]
+
+                # ===== DRAW =====
+                cv2.rectangle(
+                    frame,
+                    (x1, y1),
+                    (x2, y2),
+                    (0, 255, 0),
+                    2
+                )
+
                 cv2.putText(
                     frame,
                     f"{label} {conf:.2f}",
                     (x1, y1 - 7),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.5,
+                    (0, 255, 0),
+                    2
                 )
 
-                center_x_vis = (x1 + x2) // 2
-                center_y_vis = (y1 + y2) // 2
-                cv2.circle(frame, (center_x_vis, center_y_vis), 3, (0, 0, 255), -1)
-                cv2.putText(
+                cx_vis = (x1 + x2) // 2
+                cy_vis = (y1 + y2) // 2
+
+                cv2.circle(
                     frame,
-                    f'({center_x_vis}, {center_y_vis})',
-                    (center_x_vis, center_y_vis + 20),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1
+                    (cx_vis, cy_vis),
+                    3,
+                    (0, 0, 255),
+                    -1
                 )
 
-                # ROS message
-                bbox            = BoundingBox()
+                # ===== ROS MSG =====
+                bbox = BoundingBox()
+
                 bbox.class_name = label
                 bbox.probability = conf
-                bbox.x_min      = x1
-                bbox.y_min      = y1
-                bbox.x_max      = x2
-                bbox.y_max      = y2
-                bbox.total_x    = x2 - x1
+
+                bbox.x_min = x1
+                bbox.y_min = y1
+                bbox.x_max = x2
+                bbox.y_max = y2
+
+                bbox.total_x = x2 - x1
 
                 msg.bounding_boxes.append(bbox)
 
+        # ================= PUBLISH =================
         self.obj_det_pub.publish(msg)
 
-        # FPS overlay
+        # ================= FPS TEXT =================
         cv2.putText(
-            frame, f"FPS: {fps:.1f} | CAM: {self.cam_id}",
+            frame,
+            f"FPS: {fps:.1f}",
             (10, 30),
             cv2.FONT_HERSHEY_SIMPLEX,
-            0.8, (0, 0, 255), 2
+            0.8,
+            (0, 0, 255),
+            2
         )
 
-        self.get_logger().info(
-            f"[FPS] {fps:.1f} | CAM={self.cam_id} | "
-            f"Detected {len(msg.bounding_boxes)} objects"
-        )
+        # ================= LOG 1 DETIK SEKALI =================
+        now = time.time()
 
-        # Publish image (throttled, resize 320x240)
-        if t0 - self.last_image_pub >= self.image_pub_interval:
-            small_frame      = cv2.resize(frame, (320, 240))
-            img_msg          = self.bridge.cv2_to_imgmsg(small_frame, encoding='bgr8')
+        if now - self.last_log_time >= 1.0:
+
+            self.get_logger().info(
+                f"FPS={fps:.1f} | Detected={len(msg.bounding_boxes)}"
+            )
+
+            self.last_log_time = now
+
+        # ================= IMAGE PUB =================
+        if now - self.last_image_pub >= self.image_pub_interval:
+
+            small_frame = cv2.resize(
+                frame,
+                (320, 240)
+            )
+
+            img_msg = self.bridge.cv2_to_imgmsg(
+                small_frame,
+                encoding='bgr8'
+            )
+
             self.pub_image.publish(img_msg)
-            self.last_image_pub = t0
 
-    # =========================================================================
+            self.last_image_pub = now
+
+    # ==================================================
     # CLEANUP
-    # =========================================================================
+    # ==================================================
     def destroy(self):
-        if self.cap is not None:
-            self.cap.release()
+
+        self.get_logger().warn("Shutting down...")
+
+        try:
+            if self.cap is not None:
+                self.cap.release()
+        except:
+            pass
+
         cv2.destroyAllWindows()
-        del self.model
-        os._exit(0)  # anti TensorRT allocator crash
 
 
-# =============================================================================
+# ======================================================
 # MAIN
-# =============================================================================
+# ======================================================
 def main(args=None):
+
     rclpy.init(args=args)
+
     node = ObjectDetectionNode()
 
     try:
+
         while rclpy.ok():
+
             node.spin_once()
-            rclpy.spin_once(node, timeout_sec=0.0)
+
+            rclpy.spin_once(
+                node,
+                timeout_sec=0.01
+            )
+
+            # penting supaya CPU tidak 100%
+            time.sleep(0.01)
+
     except KeyboardInterrupt:
         pass
-    finally:
-        node.destroy()
-        rclpy.shutdown()
 
+    finally:
+
+        node.destroy()
+
+        rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
