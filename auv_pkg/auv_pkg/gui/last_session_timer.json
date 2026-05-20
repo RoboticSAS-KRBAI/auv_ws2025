@@ -1,0 +1,113 @@
+{
+  "delay": "3",
+  "rows": [
+    {
+      "status": "all",
+      "timer": "11",
+      "yaw": "268",
+      "depth": "-0.32"
+    },
+    {
+      "status": "camera_sway_forward_right",
+      "timer": "3",
+      "yaw": "",
+      "depth": ""
+    },
+    {
+      "status": "all",
+      "timer": "1.5",
+      "yaw": "",
+      "depth": ""
+    },
+    {
+      "status": "sway_left",
+      "timer": "1",
+      "yaw": "",
+      "depth": ""
+    },
+    {
+      "status": "all",
+      "timer": "15",
+      "yaw": "262",
+      "depth": "0.1"
+    },
+    {
+      "status": "sway_right",
+      "timer": "5",
+      "yaw": "",
+      "depth": ""
+    },
+    {
+      "status": "all",
+      "timer": "3",
+      "yaw": "",
+      "depth": "0"
+    },
+    {
+      "status": "camera_slow",
+      "timer": "15",
+      "yaw": "",
+      "depth": ""
+    },
+    {
+      "status": "backward_yaw",
+      "timer": "25",
+      "yaw": "",
+      "depth": "-0.32"
+    },
+    {
+      "status": "stop",
+      "timer": "",
+      "yaw": "",
+      "depth": ""
+    },
+    {
+      "status": "stop",
+      "timer": "",
+      "yaw": "",
+      "depth": ""
+    },
+    {
+      "status": "stop",
+      "timer": "",
+      "yaw": "",
+      "depth": ""
+    },
+    {
+      "status": "stop",
+      "timer": "",
+      "yaw": "",
+      "depth": ""
+    },
+    {
+      "status": "stop",
+      "timer": "",
+      "yaw": "",
+      "depth": ""
+    },
+    {
+      "status": "stop",
+      "timer": "",
+      "yaw": "",
+      "depth": ""
+    },
+    {
+      "status": "stop",
+      "timer": "",
+      "yaw": "",
+      "depth": ""
+    },
+    {
+      "status": "stop",
+      "timer": "",
+      "yaw": "",
+      "depth": ""
+    },
+    {
+      "status": "stop",
+      "timer": "",
+      "yaw": "",
+      "depth": ""
+    }
+  ]
+}

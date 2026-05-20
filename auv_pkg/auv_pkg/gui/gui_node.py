@@ -1,41 +1,145 @@
 #!/usr/bin/env python3
 import math
 import sys
+import json
+import os
 import threading
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtGui import QPixmap, QTransform, QPainter
 from .AUV_GUI import Ui_MainWindow  # hasil dari pyuic5
 from .ModelAUV import ROV3DWidget
-# from PyQt5.QtOpenGL import QGLWidget
 
 import rclpy
 from rclpy.node import Node
 from auv_interfaces.msg import MultiPID, SetPoint, Sensor, PID, MultiPID, SetPoint, Actuator
 from std_msgs.msg import String, Float32
 
-# from .camera_node import CameraThread
+# ─────────────────────────────────────────────────────────────────────────────
+# Path file sesi — disimpan di folder yang sama dengan script ini
+# ─────────────────────────────────────────────────────────────────────────────
+SESSION_FILE = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "last_session_auv.json"
+)
+
+# Field yang akan disimpan: (nama_attr_ui, tipe_widget)
+# tipe: 'lineedit' → QLineEdit, 'combobox' → QComboBox
+SESSION_FIELDS = [
+    # ── Setpoint ──────────────────────────────────────────────────────────
+    ("setYaw",     "lineedit"),
+    ("setDepth",   "lineedit"),
+    ("setPitch",   "lineedit"),
+    ("setRoll",    "lineedit"),
+    ("comboBoxStatus", "combobox"),
+
+    # ── PID Yaw ───────────────────────────────────────────────────────────
+    ("setPYaw",    "lineedit"),
+    ("setIYaw",    "lineedit"),
+    ("setDYaw",    "lineedit"),
+
+    # ── PID Pitch ─────────────────────────────────────────────────────────
+    ("setPPitch",  "lineedit"),
+    ("setIPitch",  "lineedit"),
+    ("setDPitch",  "lineedit"),
+
+    # ── PID Roll ──────────────────────────────────────────────────────────
+    ("setPRoll",   "lineedit"),
+    ("setIRoll",   "lineedit"),
+    ("setDRoll",   "lineedit"),
+
+    # ── PID Depth ─────────────────────────────────────────────────────────
+    ("setPDepth",  "lineedit"),
+    ("setIDepth",  "lineedit"),
+    ("setDDepth",  "lineedit"),
+
+    # ── PID Camera ────────────────────────────────────────────────────────
+    ("setPCamera", "lineedit"),
+    ("setICamera", "lineedit"),
+    ("setDCamera", "lineedit"),
+]
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Helper: Simpan sesi ke JSON
+# ─────────────────────────────────────────────────────────────────────────────
+def save_session(ui):
+    """
+    Menyimpan semua field input UI ke file JSON.
+    Dipanggil saat tombol SET ditekan.
+    """
+    data = {}
+    for attr, kind in SESSION_FIELDS:
+        widget = getattr(ui, attr, None)
+        if widget is None:
+            continue
+        if kind == "lineedit":
+            data[attr] = widget.text().strip()
+        elif kind == "combobox":
+            data[attr] = widget.currentText().strip()
+
+    try:
+        with open(SESSION_FILE, "w") as f:
+            json.dump(data, f, indent=2)
+        print(f"[AUV GUI] 💾 Sesi disimpan ke: {SESSION_FILE}")
+    except Exception as e:
+        print(f"[AUV GUI] Gagal menyimpan sesi: {e}")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Helper: Load sesi dari JSON ke UI
+# ─────────────────────────────────────────────────────────────────────────────
+def load_session(ui):
+    """
+    Memuat data sesi dari file JSON dan mengisi kembali seluruh input UI.
+    Dipanggil otomatis saat GUI pertama kali dibuka.
+    Jika file belum ada, diam saja (UI tetap kosong/default).
+    """
+    if not os.path.exists(SESSION_FILE):
+        print("[AUV GUI] Belum ada sesi tersimpan, mulai dari kosong.")
+        return
+
+    try:
+        with open(SESSION_FILE, "r") as f:
+            data = json.load(f)
+    except Exception as e:
+        print(f"[AUV GUI] Gagal memuat sesi: {e}")
+        return
+
+    for attr, kind in SESSION_FIELDS:
+        widget = getattr(ui, attr, None)
+        if widget is None or attr not in data:
+            continue
+
+        value = data[attr]
+
+        if kind == "lineedit":
+            widget.setText(value)
+
+        elif kind == "combobox":
+            # Coba cari di item list dulu; kalau tidak ada set langsung (custom text)
+            idx = widget.findText(value)
+            if idx >= 0:
+                widget.setCurrentIndex(idx)
+            else:
+                widget.setCurrentText(value)
+
+    print(f"[AUV GUI] ✅ Sesi berhasil dimuat dari: {SESSION_FILE}")
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ROS2 Node
+# ─────────────────────────────────────────────────────────────────────────────
 
 class GuidanceGUI(Node):
     def __init__(self, ui):
         super().__init__('gui_guidance')
         self.ui = ui
 
-        # 1. Buat GLWidget baru
+        # ── OpenGL / 3D model ─────────────────────────────────────────────
         self.opengl_widget = ROV3DWidget(self.ui.openGLWidget.parent())
-
-        # 2. Pastikan widget bisa kelihatan (sangat penting)
         self.opengl_widget.setMaximumSize(355, 350)
-
-        # 3. Ambil layout yang berisi OpenGLWidget lama
         layout = self.ui.gridLayout_3
-
-        # 2. Ganti widgetnya
         layout.replaceWidget(self.ui.openGLWidget, self.opengl_widget)
-
-        # 3. Hapus placeholder lama
         self.ui.openGLWidget.setParent(None)
-
-        # 4. Tampilkan ulang
         self.opengl_widget.show()
 
         #yaw_dot
@@ -44,25 +148,17 @@ class GuidanceGUI(Node):
             QtCore.Qt.KeepAspectRatio,
             QtCore.Qt.FastTransformation
         )
-
         self.ui.labeldot.setScaledContents(False)
-
         self.ui.labeldot.setPixmap(self.dot_pixmap)
 
-        # Inisialisasi yaw
-        self.current_yaw = 0
+        # ── Orientasi saat ini ────────────────────────────────────────────
+        self.current_yaw   = 0
         self.current_pitch = 0
-        self.current_roll = 0
+        self.current_roll  = 0
 
         self.rotate_timer = QtCore.QTimer()
         self.rotate_timer.timeout.connect(self.updateYaw)
         self.rotate_timer.start(50)
-        
-        # camera
-        # self.camera_thread = CameraThread()
-        # self.camera_thread.frame_ready.connect(self.update_camera_view)
-        # self.camera_thread.start()
-
 
         # Subscriptions
         # self.sub_pid = self.create_subscription(MultiPID, 'pid', self.pid_callback, 10)
@@ -78,8 +174,12 @@ class GuidanceGUI(Node):
         self.pub_status = self.create_publisher(String, 'status', 10)
         self.pub_boost = self.create_publisher(Float32, 'boost', 10)
 
+        # Tombol
         self.ui.setPointStatusButton.clicked.connect(self.publish_values)
         self.ui.emergencyButton.clicked.connect(self.emergency_stop)
+
+        # ── Auto-load sesi terakhir saat GUI dibuka ───────────────────────
+        load_session(self.ui)
 
         self.get_logger().info("GUI ROS2 Node Started with Publishers")
     
@@ -87,6 +187,11 @@ class GuidanceGUI(Node):
         self.publish_values(status_override="stop")
     
     def publish_values(self, status_override=None):
+        # ── Simpan sesi setiap kali SET ditekan ──────────────────────────
+        # Disimpan sebelum membaca nilai agar data yang tersimpan selalu
+        # mencerminkan apa yang sedang tampil di layar.
+        save_session(self.ui)
+
         try:
             if isinstance(status_override, str):
                 statusText = status_override
@@ -118,39 +223,24 @@ class GuidanceGUI(Node):
         except:
             print("ERROR: Input tidak valid")
             return
+        
+        # ── Buat pesan PID ────────────────────────────────────────────────
+        def make_pid(kp, ki, kd):
+            p = PID(); p.kp = kp; p.ki = ki; p.kd = kd
+            return p
+        
+        multi_pid_msg           = MultiPID()
+        multi_pid_msg.pid_yaw   = make_pid(kp_yaw,   ki_yaw,   kd_yaw)
+        multi_pid_msg.pid_pitch = make_pid(kp_pitch,  ki_pitch,  kd_pitch)
+        multi_pid_msg.pid_roll  = make_pid(kp_roll,   ki_roll,   kd_roll)
+        multi_pid_msg.pid_depth = make_pid(kp_depth,  ki_depth,  kd_depth)
+        multi_pid_msg.pid_camera= make_pid(kp_camera, ki_camera, kd_camera)
 
         # -------- PID values (bisa kamu ubah) ----------
         pid_yaw = PID()
         pid_yaw.kp = kp_yaw
         pid_yaw.ki = ki_yaw
         pid_yaw.kd = kd_yaw
-
-        pid_pitch = PID()
-        pid_pitch.kp = kp_pitch
-        pid_pitch.ki = ki_pitch
-        pid_pitch.kd = kd_pitch
-
-        pid_roll = PID()
-        pid_roll.kp = kp_roll
-        pid_roll.ki = ki_roll
-        pid_roll.kd = kd_roll
-
-        pid_depth = PID()
-        pid_depth.kp = kp_depth
-        pid_depth.ki = ki_depth
-        pid_depth.kd = kd_depth
-
-        pid_camera = PID()
-        pid_camera.kp = kp_camera
-        pid_camera.ki = ki_camera
-        pid_camera.kd = kd_camera
-
-        multi_pid_msg = MultiPID()
-        multi_pid_msg.pid_yaw = pid_yaw
-        multi_pid_msg.pid_pitch = pid_pitch
-        multi_pid_msg.pid_roll = pid_roll
-        multi_pid_msg.pid_depth = pid_depth
-        multi_pid_msg.pid_camera = pid_camera
 
         # -------- SetPoint message ----------
         set_point = SetPoint()
@@ -159,13 +249,9 @@ class GuidanceGUI(Node):
         set_point.roll = roll
         set_point.depth = depth
 
-        # -------- Status ----------
-        status = String()
-        status.data = statusText
-
-        # -------- Boost ----------
-        boost = Float32()
-        boost.data = 0.0
+        # ── Status & Boost ────────────────────────────────────────────────
+        status      = String();  status.data = statusText
+        boost       = Float32(); boost.data  = 0.0
 
         # -------- Publish ----------
         self.pub_status.publish(status)
@@ -174,10 +260,8 @@ class GuidanceGUI(Node):
         self.pub_boost.publish(boost)
 
         print("====== PUBLISH SUCCESS ======")
-        print("Yaw:", yaw)
-        print("Pitch:", pitch)
-        print("Roll:", roll)
-        print("Depth:", depth)
+        print(f"Status: {statusText}")
+        print(f"Yaw: {yaw} | Pitch: {pitch} | Roll: {roll} | Depth: {depth}")
         print("================================")
     
     def g_to_deg(self, g_value, gain=2.5):
@@ -198,7 +282,7 @@ class GuidanceGUI(Node):
         if self.opengl_widget:
             self.opengl_widget.update_orientation(-angle, -pitch_deg, roll_deg)
 
-
+    # ── Subscribers ───────────────────────────────────────────────────────────
     def status_callback(self, msg):
         self.ui.Status.setText(msg.data)
     
@@ -214,9 +298,7 @@ class GuidanceGUI(Node):
         self.ui.Pitch.setText(f"{msg.pitch:.2f}")
         self.ui.Roll.setText(f"{msg.roll:.2f}")
 
-
     def setpoint_callback(self, msg):
-        # self.ui.lblSetpoint.setText(f"Yaw: {msg.yaw:.2f}, Depth: {msg.depth:.2f}")
         self.ui.yawSetPoint.setText(f"{msg.yaw:.2f}°")
         self.ui.depthSetPoint.setText(f"{msg.depth:.2f}")
         self.ui.pitchSetPoint.setText(f"{msg.pitch:.2f}")
@@ -233,7 +315,6 @@ class GuidanceGUI(Node):
         self.ui.Thruster8.setText(f"{msg.thruster_8:.2f}")
         self.ui.Thruster9.setText(f"{msg.thruster_9:.2f}")
         self.ui.Thruster10.setText(f"{msg.thruster_10:.2f}")
-
 
 def ros_spin(node):
     rclpy.spin(node)

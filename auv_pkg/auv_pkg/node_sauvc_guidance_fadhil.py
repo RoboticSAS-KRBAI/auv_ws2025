@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-SAUVC Guidance Node – State Machine
+SAUVC Guidance Node – State Machine WITH MAP
 ====================================
 Flag 1 : Dodge orange flare
 Flag 2 : Ram 3 coloured flares (urutan & zona bisa dikonfigurasi)
@@ -135,7 +135,7 @@ class SubGuidance(Node):
         pid_pitch.kd      = 1.7
 
         pid_roll          = PID()
-        pid_roll.kp       = 1.5
+        pid_roll.kp       = 2.5
         pid_roll.ki       = 0.0
         pid_roll.kd       = 0.3
 
@@ -222,8 +222,14 @@ class SubGuidance(Node):
         dy = ty - self.robot_y
         dx = tx - self.robot_x
 
+        forward_cmd = "all"
+        backward_cmd = "backward"
+
         if abs(dy) > POSITION_TOL:
-            self.publish_status("all" if dy > 0 else "backward")
+            if dy < 0:
+                self.publish_status(forward_cmd)
+            else:
+                self.publish_status(backward_cmd)
         elif abs(dx) > POSITION_TOL:
             self.publish_status("sway_right" if dx > 0 else "sway_left")
 
@@ -252,7 +258,7 @@ class SubGuidance(Node):
                 self.publish_status("all")
 
                 if self.detected_obj == "orange_flare" and self.elapsed()>2.0:
-                    self.publish_status("camera")
+                    self.publish_status("camera_yaw")
                     self.flare_position_memory = ""   # reset sebelum centering
                     self.change_sub_state("CENTERING")
 
@@ -351,9 +357,23 @@ class SubGuidance(Node):
             #           jika zone map tidak update cepat, robot tidak bergerak.
             # FIX     : navigasi berbasis koordinat aktual dari /robot_pose.
             elif self.sub_state == "TO_DEFAULT":
-                if self.at_position(default_x, default_y) and self.elapsed()>10:
-                    self.change_sub_state("TO_ZONE")
+
+                if self.at_position(default_x, default_y):
+
+                    # STOP dulu
+                    self.publish_status("dpr_ssy")
+
+                    # mulai timer kalau belum mulai
+                    if self.within_tolerance_start is None:
+                        self.within_tolerance_start = time.time()
+
+                    # cek sudah diam 3 detik
+                    if time.time() - self.within_tolerance_start >= 3.0:
+                        self.change_sub_state("TO_ZONE")
+
                 else:
+                    # belum sampai → reset timer
+                    self.within_tolerance_start = None
                     self.navigate_to(default_x, default_y)
 
             # ── TO_ZONE ──

@@ -1,28 +1,24 @@
 #!/usr/bin/env python3
 """
-serial_monitoring_safety_and_bucket.py
+camera_bucket_detection.py
 
 Node ROS2 untuk:
-- Kamera deteksi warna (bucket) — tanpa CAP_V4L2, tanpa thread (sama seperti YOLO node)
-- Monitoring sensor baterai via serial ESP
-- Publish hasil ke ROS2 topic
+- Kamera deteksi warna (bucket)
+- Publish hasil deteksi ke ROS2 topic
 - Subscribe safety_flag dari ROS2
 - Kirim drop ball ke Teensy via ROS2 topic /drop_ball
 """
 
-import os
 import cv2
 import numpy as np
 import time
 import rclpy
 from rclpy.node import Node
-import serial
 
-from std_msgs.msg import String, Bool, Float32
+from std_msgs.msg import String, Bool
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 
-from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
 
 # ================= CONFIG =================
 CAM_ID   = 0
@@ -31,16 +27,15 @@ IMGSZ_H  = 480
 # ==========================================
 
 
-class SerialBridgeNodeAndColorDetection(Node):
+class CameraBucketDetectionNode(Node):
     def __init__(self):
-        super().__init__('serial_bridge_and_color_detection_node')
-        self.get_logger().info("Node OpenCV has been started")
+        super().__init__('camera_bucket_detection_node')
+        self.get_logger().info("Node Camera Bucket Detection has been started")
 
         # -------------------------------------------------
-        # KAMERA — tanpa CAP_V4L2, tanpa thread
+        # KAMERA
         # -------------------------------------------------
-        # self.cap = cv2.VideoCapture(CAM_ID)
-        self.cap = cv2.VideoCapture(CAM_ID, cv2.CAP_V4L2)
+        self.cap = cv2.VideoCapture(CAM_ID)
         self.cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH,  IMGSZ_W)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, IMGSZ_H)
@@ -56,21 +51,14 @@ class SerialBridgeNodeAndColorDetection(Node):
             f = self.cap.get(cv2.CAP_PROP_FPS)
             self.get_logger().info(f"Camera actual: {w}x{h} @ {f}fps")
 
-
-        self.last_log_time = 0
-        self.log_interval = 0.05  # 20 Hz
-
-        self.last_frame_time = time.time()
-        self.camera_hang_threshold = 0.5
-
         # -------------------------------------------------
         # HSV THRESHOLD
         # -------------------------------------------------
-        self.lower_hue        = 112
-        self.upper_hue        = 130
-        self.lower_saturation = 110
+        self.lower_hue        = 82
+        self.upper_hue        = 179
+        self.lower_saturation = 167
         self.upper_saturation = 255
-        self.lower_value      = 47
+        self.lower_value      = 114
         self.upper_value      = 255
 
         # -------------------------------------------------
@@ -80,10 +68,6 @@ class SerialBridgeNodeAndColorDetection(Node):
         self.center_y        = 0
         self.object_detected = False
         self.drop_bucket     = "False"
-        self.done_drop_ball     = False
-        self.drop_active = False
-        self.drop_start_time = 0
-        self.drop_duration = 0.2  # detik
 
         # -------------------------------------------------
         # FPS TRACKING
@@ -97,114 +81,36 @@ class SerialBridgeNodeAndColorDetection(Node):
         self.bridge = CvBridge()
 
         # -------------------------------------------------
-        # SERIAL (ESP) — aman jika tidak terhubung
-        # -------------------------------------------------
-        serial_port = '/dev/ttyUSB0'
-        self.ser    = None
-
-        if os.path.exists(serial_port):
-            try:
-                self.ser = serial.Serial(serial_port, 115200, timeout=0.1)
-                self.get_logger().info(f"ESP Serial connected: {serial_port}")
-            except serial.SerialException as e:
-                self.get_logger().warn(f"ESP Serial open failed: {e}")
-        else:
-            self.get_logger().warn(f"ESP port {serial_port} not found, skipping serial")
-
-        self.last_serial_read     = time.time()
-        self.serial_interval      = 0.1
-        self.last_serial_send     = time.time()
-        self.serial_send_interval = 0.1
-
-        # -------------------------------------------------
         # IMAGE PUBLISH INTERVAL (~10fps)
         # -------------------------------------------------
         self.last_image_pub     = time.time()
         self.image_pub_interval = 0.1
 
         # -------------------------------------------------
+        # DROP BALL SEND INTERVAL
+        # -------------------------------------------------
+        self.last_serial_send     = time.time()
+        self.serial_send_interval = 0.1
+
+        # -------------------------------------------------
         # PUBLISHERS
         # -------------------------------------------------
-        qos = QoSProfile(
-        reliability=ReliabilityPolicy.BEST_EFFORT,
-        history=HistoryPolicy.KEEP_LAST,
-        depth=1
-)
         self.pub_string    = self.create_publisher(String, '/bucket_detected_python', 10)
         self.pub_bool      = self.create_publisher(Bool,   '/bucket_detected',        10)
-        self.pub_sensor    = self.create_publisher(String, 'sensor_string',           10)
-        self.pub_image = self.create_publisher(Image, '/camera/bucket_cam', qos)
-        self.pub_drop_ball = self.create_publisher(Float32, '/drop_ball', 10)
+        self.pub_image     = self.create_publisher(Image,  '/camera/bucket_cam',      10)
+        self.pub_drop_ball = self.create_publisher(String, '/drop_ball',              10)
 
         # -------------------------------------------------
         # SUBSCRIBERS
         # -------------------------------------------------
-        # self.sub_safety = self.create_subscription(
-        #     Bool,
-        #     'safety_flag',
-        #     self.safety_callback,
-        #     10
-        # )
+        self.sub_safety = self.create_subscription(
+            Bool,
+            'safety_flag',
+            self.safety_callback,
+            10
+        )
 
         self.get_logger().info("Node Started")
-
-    # =========================================================================
-    # SERIAL → ROS2
-    # =========================================================================
-    def read_serial(self):
-        """Baca data sensor dari ESP via serial, publish ke ROS2."""
-        if self.ser is None:
-            return
-
-        try:
-            if self.ser is None:
-                return
-
-            if self.ser.in_waiting <= 0:
-                return
-
-            line = self.ser.readline().decode(errors='ignore').strip()
-            if not line or line.startswith("timestamp"):
-                return
-
-            data = line.split(',')
-            if len(data) != 13:
-                self.get_logger().warn(
-                    f"[SERIAL] Format tidak valid ({len(data)} field): {line}"
-                )
-                return
-
-            timestamp   = int(data[0])
-            pressure    = float(data[1])
-            temp_fusion = float(data[4])
-            humidity    = float(data[5])
-            voltage1    = float(data[6])
-            current1    = float(data[7])
-            power1      = float(data[8])
-            voltage2    = float(data[9])
-            current2    = float(data[10])
-            power2      = float(data[11])
-            hids_valid  = int(data[12])
-
-            formatted = (
-                f"t={timestamp} | "
-                f"p={pressure:.2f}hPa | "
-                f"temp={temp_fusion:.2f}C | "
-                f"hum={humidity:.2f}% | "
-                f"v1={voltage1:.3f}V i1={current1:.3f}A p1={power1:.3f}W | "
-                f"v2={voltage2:.3f}V i2={current2:.3f}A p2={power2:.3f}W | "
-                f"hids={'OK' if hids_valid else 'FAIL'}"
-            )
-
-            msg      = String()
-            msg.data = formatted
-            self.pub_sensor.publish(msg)
-            self.get_logger().info(f"[SENSOR] {formatted}")
-
-        except ValueError as e:
-            self.get_logger().warn(f"[SERIAL] Parse error: {e}")
-        except Exception as e:
-            self.get_logger().error(f"[SERIAL] Read error: {e}")
 
     # =========================================================================
     # COLOR DETECTION
@@ -225,19 +131,10 @@ class SerialBridgeNodeAndColorDetection(Node):
         if self.cap is None:
             return
 
-        self.cap.grab()
-        ret, frame = self.cap.retrieve()
-
-        now_check = time.time()
-
+        ret, frame = self.cap.read()
         if not ret:
             self.get_logger().warn("Frame not received!")
             return
-
-        # WATCHDOG CAMERA HANG
-        if now_check - self.last_frame_time > self.camera_hang_threshold:
-            self.get_logger().warn("⚠️ Camera stall detected")
-        self.last_frame_time = now_check
 
         # Hitung FPS
         infer_time = time.time() - self.t0
@@ -245,11 +142,6 @@ class SerialBridgeNodeAndColorDetection(Node):
         self.t0    = time.time()
 
         now = time.time()
-
-        # Baca serial ESP (throttled)
-        if now - self.last_serial_read >= self.serial_interval:
-            self.read_serial()
-            self.last_serial_read = now
 
         # Deteksi warna
         _, mask = self.detect_color(frame)
@@ -303,20 +195,9 @@ class SerialBridgeNodeAndColorDetection(Node):
             self.drop_bucket     = "False"
 
         # Kirim drop ball ke Teensy via ROS2 (throttled)
-        # START DROP (trigger sekali)
-        if self.object_detected and not self.drop_active and not self.done_drop_ball:
-            self.drop_active = True
-            self.drop_start_time = now
-            self.send_drop_ball(True)
-            self.get_logger().info("DROP START")
-
-        # STOP DROP setelah 1 detik
-        if self.drop_active:
-            if now - self.drop_start_time >= self.drop_duration:
-                self.send_drop_ball(False)
-                self.drop_active = False
-                self.done_drop_ball = True
-                self.get_logger().info("DROP STOP")
+        if now - self.last_serial_send >= self.serial_send_interval:
+            self.send_drop_ball(self.object_detected)
+            self.last_serial_send = now
 
         # Publish ke ROS2
         msg_bool      = Bool()
@@ -327,13 +208,10 @@ class SerialBridgeNodeAndColorDetection(Node):
         msg_str.data = self.drop_bucket
         self.pub_string.publish(msg_str)
 
-        now_log = time.time()
-        if now_log - self.last_log_time >= self.log_interval:
-            self.get_logger().info(
-                f"[FPS] {self.fps:.1f} | detected={self.object_detected} | "
-                f"center=({self.center_x},{self.center_y})"
-            )
-            self.last_log_time = now_log
+        self.get_logger().info(
+            f"[FPS] {self.fps:.1f} | detected={self.object_detected} | "
+            f"center=({self.center_x},{self.center_y})"
+        )
 
         # Publish image (throttled, resize 320x240)
         if now - self.last_image_pub >= self.image_pub_interval:
@@ -345,21 +223,17 @@ class SerialBridgeNodeAndColorDetection(Node):
     # =========================================================================
     # PUBLISH DROP BALL → Teensy via ROS2 topic /drop_ball
     # =========================================================================
-    # def send_drop_ball(self, detected: bool):
-    #     msg = String()
-    #     msg.data = "TRUE" if detected else "FALSE"
-    #     self.pub_drop_ball.publish(msg)
     def send_drop_ball(self, detected: bool):
-        msg = Float32()
-        msg.data = 1.0 if detected else 0.0
+        msg      = String()
+        msg.data = "putar" if detected else "diam"
         self.pub_drop_ball.publish(msg)
 
     # =========================================================================
     # SAFETY CALLBACK
     # =========================================================================
-    # def safety_callback(self, msg: Bool):
-    #     """Callback dari topic safety_flag, forward ke Teensy via ROS2."""
-    #     self.send_drop_ball(msg.data)
+    def safety_callback(self, msg: Bool):
+        """Callback dari topic safety_flag, forward ke Teensy via ROS2."""
+        self.send_drop_ball(msg.data)
 
     # =========================================================================
     # CLEANUP
@@ -367,8 +241,6 @@ class SerialBridgeNodeAndColorDetection(Node):
     def destroy(self):
         if self.cap is not None:
             self.cap.release()
-        if self.ser is not None and self.ser.is_open:
-            self.ser.close()
         cv2.destroyAllWindows()
 
 
@@ -377,7 +249,7 @@ class SerialBridgeNodeAndColorDetection(Node):
 # =============================================================================
 def main(args=None):
     rclpy.init(args=args)
-    node = SerialBridgeNodeAndColorDetection()
+    node = CameraBucketDetectionNode()
 
     try:
         while rclpy.ok():

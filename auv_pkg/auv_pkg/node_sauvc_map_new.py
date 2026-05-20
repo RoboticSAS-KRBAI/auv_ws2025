@@ -41,7 +41,7 @@ from auv_interfaces.msg import SetPoint, Sensor   # Sensor langsung, tanpa relay
 robot_x     = 0.0
 robot_y     = 0.0
 robot_theta = np.radians(90)   # radian; awal hadap +Y (maju)
-initial_yaw = 268.0 # masukin setpoint yaw depan
+initial_yaw = 261.0 # masukin setpoint yaw depan
 boost       = 0.0
 status      = ""
 
@@ -95,9 +95,9 @@ speed_map = {
 
     # ── Sway (gerak lateral) ──────────────────────────────
     # ("sway_right",    350): 0.048,
-    ("sway_right",      0): 0.0334,
+    ("sway_right",      0): 0.048,
     # ("sway_left",     350): 0.048,
-    ("sway_left",       0): 0.0334,
+    ("sway_left",       0): 0.048,
 
     # ── Sway + maju bersamaan ─────────────────────────────
     ("sway_right_forward", 350): 0.048,
@@ -147,20 +147,21 @@ class RobotVisualizer(Node):
         # ── Subscribers ─────────────────────────────────────
         # FIX 1: nama topic lowercase, sesuai guidance baru
         self.create_subscription(String,   'status',    self.status_callback,    10)
-        self.create_subscription(Float32,  'boost',     self.boost_callback,     10)
+        # self.create_subscription(Float32,  'boost',     self.boost_callback,     10)
         self.create_subscription(SetPoint, 'set_point', self.setPoint_callback,  10)
 
         # FIX 2: langsung dari sensor, tanpa relay node
-        self.create_subscription(Sensor,   '/sensor_msg', self.sensor_callback,  10)
+        # self.create_subscription(Sensor,   '/sensor_msg', self.sensor_callback,  10)
+        self.create_subscription(Float32,   '/yaw_data', self.yaw_callback,  10)
 
         # FIX 3: subscribe flag dari guidance
         self.create_subscription(Int16,    'flag',      self.flag_callback,      10)
 
     # ── Callbacks ───────────────────────────────────────────
 
-    def boost_callback(self, msg: Float32):
-        global boost
-        boost = msg.data
+    # def boost_callback(self, msg: Float32):
+    #     global boost
+    #     boost = msg.data
 
     def setPoint_callback(self, msg: SetPoint):
         global initial_yaw, receive_set_point
@@ -169,12 +170,12 @@ class RobotVisualizer(Node):
             self.get_logger().info(f"Initial yaw set: {initial_yaw:.2f}")
             receive_set_point = True
 
-    def sensor_callback(self, msg: Sensor):
+    def yaw_callback(self, msg: Float32):
         # FIX 2: ambil yaw langsung dari Sensor, tidak butuh relay node
         global robot_theta
         with lock:
             # yaw relatif terhadap arah awal
-            relative_yaw = (msg.yaw - initial_yaw) % 360
+            relative_yaw = (msg.data - initial_yaw) % 360
 
             # OPTIONAL: kalau arah kebalik, aktifkan ini
             relative_yaw = -relative_yaw
@@ -313,9 +314,9 @@ def setup_plot():
     # Gambar batas zona
     zone_lines = [
         # (x1, y1, x2, y2, label, label_x, label_y)
-        (0,  12, 0,  25, "",     0,    0),
-        (-14, 18, 14, 18, "",    0,    0),
-        (-14, 12, 14, 12, "",    0,    0),
+        (0,  8, 0,  16, "",     0,    0),
+        (-14, 16, 14, 16, "",    0,    0),
+        (-14, 8, 14, 8, "",    0,    0),
     ]
     for x1, y1, x2, y2, lbl, lx, ly in zone_lines:
         ax.plot([x1, x2], [y1, y2], 'k--', linewidth=0.5, alpha=0.4)
@@ -333,7 +334,7 @@ def setup_plot():
     for label, cx, cy in [
         ("Z1", 3, 14), ("Z2", -3, 14),
         ("Z3", -3, 10),  ("Z4",  3, 10),
-        ("Z0", 0, 5),
+        ("Z0", 0, 7), ("Z5",-3, 21),
     ]:
         ax.text(cx, cy, label, ha='center', va='center',
                 fontsize=9, color='gray', alpha=0.6)
@@ -352,7 +353,13 @@ def update_plot(frame):
     # Plot posisi saat ini
     with lock:
         cx, cy = robot_x, robot_y
-    ax.plot(cx, cy, 'ro', markersize=8)
+    # Panah arah robot
+    arrow_length = 0.8
+
+    dx = arrow_length * np.cos(robot_theta)
+    dy = arrow_length * np.sin(robot_theta)
+
+    ax.quiver(cx, cy, dx, dy, angles='xy', scale_units='xy', scale=1, width=0.01)
     ax.annotate(f"({cx:.1f}, {cy:.1f})", (cx, cy),
                 textcoords="offset points", xytext=(6, 6), fontsize=8)
 

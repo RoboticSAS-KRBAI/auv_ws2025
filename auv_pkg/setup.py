@@ -1,4 +1,5 @@
 from setuptools import find_packages, setup
+from glob import glob
 
 package_name = 'auv_pkg'
 
@@ -10,6 +11,7 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        ('share/' + package_name + '/launch', glob('launch/*.py')),  # ← tambah ini
     ],
     install_requires=['setuptools'],
     zip_safe=False,
@@ -24,11 +26,11 @@ setup(
             "accumulator = auv_pkg.node_accumulator:main",
             "guidance_teensy = auv_pkg.node_guidance_teensy:main",
             "guidance_mission = auv_pkg.node_guidance_teensy_mission1:main",
-            "guidance_sauvc_fg = auv_pkg.node_guidance_sauvc_fg:main",
+            "guidance_flare_gate = auv_pkg.node_guidance_sauvc_fg:main",
             'object_detection = auv_pkg.node_object_detection:main',
             "pub_teensy = auv_pkg.publisher_teensy:main",
             "tes_gui = auv_pkg.gui.gui_node:main",
-            "tes_gui_v2 = auv_pkg.gui.tes_gui_v2:main",
+            "gui_timer = auv_pkg.gui.gui_timer_node:main",
             "pub_teensy_serial_simple = auv_pkg.publisher_teensy_serial:main",
             "pid_logger_pub = auv_pkg.pid_logger_pub:main",
             "guidance_sauvc_qualification = auv_pkg.node_guidance_sauvc_qualification:main",
@@ -41,9 +43,14 @@ setup(
             "map_sauvc = auv_pkg.node_sauvc_map_new:main",
             "pub_yaw_only = auv_pkg.node_old_pub_yaw_only:main",
             "guidance_sauvc_fadhil = auv_pkg.node_sauvc_guidance_fadhil:main",
+            "guidance_full_reynard = auv_pkg.node_guidance_full_reynard:main",
+            "guidance_full_reynard_v2 = auv_pkg.node_guidance_full_reynard2:main",
+            "guidance_orange_gate_bucket = auv_pkg.node_guidance_orange_gate_bucket:main",
+            "bucket_detection = auv_pkg.node_bucket:main",
             "guidance_flag1 = auv_pkg.node_sauvc_flag1:main",
             "guidance_flag2 = auv_pkg.node_sauvc_flag2:main",
             "guidance_flag3 = auv_pkg.node_sauvc_flag3:main",
+            "tes_yaw_diff = auv_pkg.tes_yaw_diff:main",
         ],
     },
 )
