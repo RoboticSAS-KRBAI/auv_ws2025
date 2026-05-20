@@ -8,4 +8,6 @@
 src/auv_pkg/auv_pkg/vid/*
 
 #video
-/vid
+*.mp4
+*.avi
+*.mov
