@@ -26,7 +26,7 @@ class Guidance(Node):
         self.object_class = ""
 
         # SCAN
-        self.base_yaw = 265.0
+        self.base_yaw = 261.0
         self.scan_angle = 30.0
         self.scan_left = True
 
@@ -51,7 +51,7 @@ class Guidance(Node):
         self.set_point.roll = 0.0
         self.set_point.pitch = 0.0
         self.set_point.yaw = self.base_yaw
-        self.set_point.depth = -0.32
+        self.set_point.depth = 0.7
 
         # PID
         self.multi_pid = MultiPID()
@@ -87,6 +87,9 @@ class Guidance(Node):
 
         # BUCKET DETECTION
         self.drop_ball_status = 0
+
+        # ORANGE FLARE
+        self.orange_search_start = None
 
 
         # PUBLISHERS
@@ -212,6 +215,17 @@ class Guidance(Node):
         #             self.publish_status("all")
 
         elif self.state == "SEARCH_ORANGE_FLARE":
+            if self.orange_search_start is None:
+                self.orange_search_start = self.now()
+            
+            search_time = self.now() - self.orange_search_start
+
+            if search_time > 6.0 and not self.flare_orange_detected_once:
+                self.get_logger().info("ORANGE FLARE NOT FOUND 6s → SKIP")
+                self.orange_search_start = None
+                self.change_state("DODGE_ORANGE_FLARE")
+                return
+
             if self.object_class == "orange_flare":
                 # Cek is_target once
                 if self.is_target and not self.flare_orange_is_target_once:
@@ -253,6 +267,9 @@ class Guidance(Node):
 
         # DODGE FLARE
         elif self.state == "DODGE_ORANGE_FLARE":
+            if not hasattr(self, 'no_orange_seen') or self.no_orange_seen is None:
+                self.no_orange_seen = self.now()
+                
             self.status_dodge_flare = "sway_right_forward"
             self.publish_status("sway_right_forward")
             # if self.x_difference >= 100:
@@ -271,15 +288,18 @@ class Guidance(Node):
 
             else:
                 if self.flare_orange_detected_once:
-                
                     lost_time = self.now() - self.last_orange_flare_seen
-
-                    if lost_time > 9:
-                        self.get_logger().info("FLARE DODGED")
+                    if lost_time > 4:
+                        self.get_logger().info("ORANGE FLARE DODGED")
+                        self.change_state("BALANCE_GATE")
+                else:
+                    lost_time_no_orange_seen = self.now() - self.no_orange_seen
+                    if lost_time_no_orange_seen > 4:
+                        self.get_logger().info("ORANGE FLARE DODGED")
                         self.change_state("BALANCE_GATE")
 
         elif self.state == "BALANCE_GATE":
-            self.set_point.depth = 0.2
+            self.set_point.depth = 0.8
             self.pub_set_point.publish(self.set_point)
 
             if self.object_class == "gate":
@@ -296,6 +316,8 @@ class Guidance(Node):
 
         # SEARCH GATE
         elif self.state == "GO_GATE":
+            if not hasattr(self, 'no_gate_seen') or self.no_gate_seen is None:
+                self.no_gate_seen = self.now()
 
             if self.object_class == "gate":
                 self.publish_status("camera")
@@ -314,6 +336,11 @@ class Guidance(Node):
                     if lost_time > 10:
                         self.get_logger().info("GATE PASSED")
                         self.change_state("SEARCH_BUCKET")
+                else:
+                    lost_time_gate = self.now() - self.no_gate_seen
+                    if lost_time_gate > 5:
+                        self.get_logger().info("ORANGE FLARE DODGED")
+                        self.change_state("BALANCE_GATE")
 
         # SEARCH BUCKET
         elif self.state == "SEARCH_BUCKET":

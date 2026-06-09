@@ -1,0 +1,412 @@
+[  1%] Built target auv_interfaces__rs
+[  1%] Built target auv_interfaces__cpp
+[ 13%] Built target auv_interfaces__rosidl_generator_c
+[ 13%] Built target ament_cmake_python_symlink_auv_interfaces
+[ 25%] Built target auv_interfaces__rosidl_typesupport_c
+[ 49%] Built target auv_interfaces__rosidl_typesupport_introspection_c
+[ 49%] Built target auv_interfaces__rosidl_typesupport_fastrtps_cpp
+[ 63%] Built target auv_interfaces__rosidl_typesupport_cpp
+[ 73%] Built target auv_interfaces__rosidl_typesupport_introspection_cpp
+[ 85%] Built target auv_interfaces__rosidl_typesupport_fastrtps_c
+[ 85%] Built target auv_interfaces
+[ 86%] Built target auv_interfaces__py
+[ 97%] Built target auv_interfaces__rosidl_generator_py
+[100%] Built target auv_interfaces__rosidl_typesupport_c__pyext
+[100%] Built target auv_interfaces__rosidl_typesupport_introspection_c__pyext
+[100%] Built target auv_interfaces__rosidl_typesupport_fastrtps_c__pyext
+running egg_info
+writing auv_interfaces.egg-info/PKG-INFO
+writing dependency_links to auv_interfaces.egg-info/dependency_links.txt
+writing top-level names to auv_interfaces.egg-info/top_level.txt
+reading manifest file 'auv_interfaces.egg-info/SOURCES.txt'
+writing manifest file 'auv_interfaces.egg-info/SOURCES.txt'
+[100%] Built target ament_cmake_python_build_auv_interfaces_egg
+-- Install configuration: ""
+-- Execute custom install script
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/ament_index/resource_index/rosidl_interfaces/auv_interfaces
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/actuator.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/arduino_sensor.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/bounding_box.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/actuator__functions.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/actuator__struct.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/actuator__type_support.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/arduino_sensor__functions.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/arduino_sensor__struct.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/arduino_sensor__type_support.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/bounding_box__functions.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/bounding_box__struct.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/bounding_box__type_support.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/error__functions.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/error__struct.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/error__type_support.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/gerak__functions.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/gerak__struct.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/gerak__type_support.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/heading__functions.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/heading__struct.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/heading__type_support.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/is_stable__functions.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/is_stable__struct.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/is_stable__type_support.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/logging__functions.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/logging__struct.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/logging__type_support.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/manual__functions.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/manual__struct.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/manual__type_support.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/movement__functions.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/movement__struct.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/movement__type_support.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/multi_pid__functions.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/multi_pid__struct.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/multi_pid__type_support.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/object_detection__functions.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/object_detection__struct.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/object_detection__type_support.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/object_difference__functions.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/object_difference__struct.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/object_difference__type_support.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/orientation__functions.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/orientation__struct.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/orientation__type_support.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/pid__functions.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/pid__struct.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/pid__type_support.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/pid_vel__functions.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/pid_vel__struct.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/pid_vel__type_support.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/sensor__functions.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/sensor__struct.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/sensor__type_support.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/set_point__functions.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/set_point__struct.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/set_point__type_support.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/error.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/gerak.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/heading.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/is_stable.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/logging.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/manual.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/movement.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/multi_pid.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/object_detection.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/object_difference.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/orientation.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/pid.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/pid_vel.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/rosidl_generator_c__visibility_control.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/sensor.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/set_point.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/environment/library_path.sh
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/environment/library_path.dsv
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/actuator__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/arduino_sensor__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/bounding_box__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/error__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/gerak__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/heading__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/is_stable__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/logging__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/manual__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/movement__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/multi_pid__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/object_detection__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/object_difference__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/orientation__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/pid__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/pid_vel__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/sensor__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/set_point__rosidl_typesupport_fastrtps_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/actuator__rosidl_typesupport_introspection_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/arduino_sensor__rosidl_typesupport_introspection_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/bounding_box__rosidl_typesupport_introspection_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/error__rosidl_typesupport_introspection_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/gerak__rosidl_typesupport_introspection_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/heading__rosidl_typesupport_introspection_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/is_stable__rosidl_typesupport_introspection_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/logging__rosidl_typesupport_introspection_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/manual__rosidl_typesupport_introspection_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/movement__rosidl_typesupport_introspection_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/multi_pid__rosidl_typesupport_introspection_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/object_detection__rosidl_typesupport_introspection_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/object_difference__rosidl_typesupport_introspection_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/orientation__rosidl_typesupport_introspection_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/pid__rosidl_typesupport_introspection_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/pid_vel__rosidl_typesupport_introspection_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/sensor__rosidl_typesupport_introspection_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/set_point__rosidl_typesupport_introspection_c.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/rosidl_typesupport_introspection_c__visibility_control.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/actuator.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/arduino_sensor.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/bounding_box.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/actuator__builder.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/actuator__struct.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/actuator__traits.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/actuator__type_support.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/arduino_sensor__builder.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/arduino_sensor__struct.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/arduino_sensor__traits.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/arduino_sensor__type_support.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/bounding_box__builder.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/bounding_box__struct.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/bounding_box__traits.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/bounding_box__type_support.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/error__builder.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/error__struct.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/error__traits.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/error__type_support.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/gerak__builder.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/gerak__struct.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/gerak__traits.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/gerak__type_support.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/heading__builder.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/heading__struct.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/heading__traits.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/heading__type_support.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/is_stable__builder.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/is_stable__struct.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/is_stable__traits.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/is_stable__type_support.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/logging__builder.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/logging__struct.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/logging__traits.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/logging__type_support.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/manual__builder.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/manual__struct.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/manual__traits.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/manual__type_support.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/movement__builder.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/movement__struct.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/movement__traits.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/movement__type_support.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/multi_pid__builder.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/multi_pid__struct.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/multi_pid__traits.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/multi_pid__type_support.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/object_detection__builder.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/object_detection__struct.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/object_detection__traits.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/object_detection__type_support.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/object_difference__builder.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/object_difference__struct.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/object_difference__traits.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/object_difference__type_support.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/orientation__builder.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/orientation__struct.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/orientation__traits.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/orientation__type_support.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/pid__builder.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/pid__struct.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/pid__traits.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/pid__type_support.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/pid_vel__builder.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/pid_vel__struct.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/pid_vel__traits.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/pid_vel__type_support.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/sensor__builder.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/sensor__struct.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/sensor__traits.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/sensor__type_support.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/set_point__builder.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/set_point__struct.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/set_point__traits.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/set_point__type_support.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/error.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/gerak.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/heading.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/is_stable.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/logging.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/manual.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/movement.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/multi_pid.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/object_detection.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/object_difference.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/orientation.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/pid.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/pid_vel.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/rosidl_generator_cpp__visibility_control.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/sensor.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/set_point.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/actuator__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/arduino_sensor__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/bounding_box__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/error__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/gerak__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/heading__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/is_stable__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/logging__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/manual__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/movement__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/multi_pid__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/object_detection__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/object_difference__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/orientation__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/pid__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/pid_vel__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/sensor__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/set_point__rosidl_typesupport_fastrtps_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/actuator__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/arduino_sensor__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/bounding_box__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/error__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/gerak__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/heading__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/is_stable__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/logging__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/manual__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/movement__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/multi_pid__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/object_detection__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/object_difference__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/orientation__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/pid__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/pid_vel__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/sensor__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/include/auv_interfaces/auv_interfaces/msg/detail/set_point__rosidl_typesupport_introspection_cpp.hpp
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/environment/pythonpath.sh
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/environment/pythonpath.dsv
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces-0.0.0-py3.10.egg-info/PKG-INFO
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces-0.0.0-py3.10.egg-info/SOURCES.txt
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces-0.0.0-py3.10.egg-info/dependency_links.txt
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces-0.0.0-py3.10.egg-info/top_level.txt
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/__init__.py
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/_auv_interfaces_s.ep.rosidl_typesupport_c.c
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/_auv_interfaces_s.ep.rosidl_typesupport_fastrtps_c.c
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/_auv_interfaces_s.ep.rosidl_typesupport_introspection_c.c
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/auv_interfaces_s__rosidl_typesupport_c.cpython-310-aarch64-linux-gnu.so
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/auv_interfaces_s__rosidl_typesupport_fastrtps_c.cpython-310-aarch64-linux-gnu.so
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/auv_interfaces_s__rosidl_typesupport_introspection_c.cpython-310-aarch64-linux-gnu.so
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/libauv_interfaces__rosidl_generator_py.so
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/__init__.py
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_actuator.py
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_actuator_s.c
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_arduino_sensor.py
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_arduino_sensor_s.c
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_bounding_box.py
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_bounding_box_s.c
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_error.py
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_error_s.c
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_gerak.py
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_gerak_s.c
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_heading.py
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_heading_s.c
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_is_stable.py
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_is_stable_s.c
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_logging.py
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_logging_s.c
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_manual.py
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_manual_s.c
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_movement.py
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_movement_s.c
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_multi_pid.py
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_multi_pid_s.c
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_object_detection.py
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_object_detection_s.c
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_object_difference.py
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_object_difference_s.c
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_orientation.py
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_orientation_s.c
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_pid.py
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_pid_s.c
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_pid_vel.py
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_pid_vel_s.c
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_sensor.py
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_sensor_s.c
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_set_point.py
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg/_set_point_s.c
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/auv_interfaces_s__rosidl_typesupport_fastrtps_c.cpython-310-aarch64-linux-gnu.so
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/auv_interfaces_s__rosidl_typesupport_introspection_c.cpython-310-aarch64-linux-gnu.so
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/auv_interfaces_s__rosidl_typesupport_c.cpython-310-aarch64-linux-gnu.so
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/ament_index/resource_index/rust_packages/auv_interfaces
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/rust/Cargo.toml
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/rust/build.rs
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/rust/src/lib.rs
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/rust/src/msg.rs
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/rust/src/msg/rmw.rs
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/Actuator.idl
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/ArduinoSensor.idl
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/BoundingBox.idl
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/Error.idl
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/Gerak.idl
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/Heading.idl
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/IsStable.idl
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/Logging.idl
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/Manual.idl
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/Movement.idl
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/MultiPID.idl
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/ObjectDetection.idl
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/ObjectDifference.idl
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/Orientation.idl
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/PID.idl
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/PIDVel.idl
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/Sensor.idl
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/SetPoint.idl
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/Actuator.msg
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/ArduinoSensor.msg
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/BoundingBox.msg
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/Error.msg
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/Gerak.msg
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/Heading.msg
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/IsStable.msg
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/Logging.msg
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/Manual.msg
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/Movement.msg
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/MultiPID.msg
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/ObjectDetection.msg
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/ObjectDifference.msg
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/Orientation.msg
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/PID.msg
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/PIDVel.msg
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/Sensor.msg
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/msg/SetPoint.msg
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/ament_index/resource_index/package_run_dependencies/auv_interfaces
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/ament_index/resource_index/parent_prefix_path/auv_interfaces
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/environment/ament_prefix_path.sh
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/environment/ament_prefix_path.dsv
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/environment/path.sh
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/environment/path.dsv
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/local_setup.bash
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/local_setup.sh
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/local_setup.zsh
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/local_setup.dsv
+-- Symlinking: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/package.dsv
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/ament_index/resource_index/packages/auv_interfaces
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/cmake/rosidl_cmake-extras.cmake
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/cmake/ament_cmake_export_dependencies-extras.cmake
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/cmake/ament_cmake_export_include_directories-extras.cmake
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/cmake/ament_cmake_export_libraries-extras.cmake
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/cmake/ament_cmake_export_targets-extras.cmake
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/cmake/auv_interfacesConfig.cmake
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/cmake/auv_interfacesConfig-version.cmake
+-- Up-to-date symlink: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/package.xml
+-- Up-to-date: /home/techsas/auv_ws/install/auv_interfaces/lib/libauv_interfaces__rosidl_generator_c.so
+-- Up-to-date: /home/techsas/auv_ws/install/auv_interfaces/lib/libauv_interfaces__rosidl_typesupport_fastrtps_c.so
+-- Up-to-date: /home/techsas/auv_ws/install/auv_interfaces/lib/libauv_interfaces__rosidl_typesupport_introspection_c.so
+-- Up-to-date: /home/techsas/auv_ws/install/auv_interfaces/lib/libauv_interfaces__rosidl_typesupport_c.so
+-- Up-to-date: /home/techsas/auv_ws/install/auv_interfaces/lib/libauv_interfaces__rosidl_typesupport_fastrtps_cpp.so
+-- Up-to-date: /home/techsas/auv_ws/install/auv_interfaces/lib/libauv_interfaces__rosidl_typesupport_introspection_cpp.so
+-- Up-to-date: /home/techsas/auv_ws/install/auv_interfaces/lib/libauv_interfaces__rosidl_typesupport_cpp.so
+Listing '/home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces'...
+Listing '/home/techsas/auv_ws/install/auv_interfaces/local/lib/python3.10/dist-packages/auv_interfaces/msg'...
+-- Up-to-date: /home/techsas/auv_ws/install/auv_interfaces/lib/libauv_interfaces__rosidl_generator_py.so
+-- Up-to-date: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/cmake/export_auv_interfaces__rosidl_generator_cExport.cmake
+-- Up-to-date: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/cmake/export_auv_interfaces__rosidl_generator_cExport-noconfig.cmake
+-- Up-to-date: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/cmake/export_auv_interfaces__rosidl_typesupport_fastrtps_cExport.cmake
+-- Up-to-date: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/cmake/export_auv_interfaces__rosidl_typesupport_fastrtps_cExport-noconfig.cmake
+-- Up-to-date: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/cmake/auv_interfaces__rosidl_typesupport_introspection_cExport.cmake
+-- Up-to-date: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/cmake/auv_interfaces__rosidl_typesupport_introspection_cExport-noconfig.cmake
+-- Up-to-date: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/cmake/auv_interfaces__rosidl_typesupport_cExport.cmake
+-- Up-to-date: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/cmake/auv_interfaces__rosidl_typesupport_cExport-noconfig.cmake
+-- Up-to-date: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/cmake/export_auv_interfaces__rosidl_generator_cppExport.cmake
+-- Up-to-date: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/cmake/export_auv_interfaces__rosidl_typesupport_fastrtps_cppExport.cmake
+-- Up-to-date: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/cmake/export_auv_interfaces__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake
+-- Up-to-date: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/cmake/auv_interfaces__rosidl_typesupport_introspection_cppExport.cmake
+-- Up-to-date: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/cmake/auv_interfaces__rosidl_typesupport_introspection_cppExport-noconfig.cmake
+-- Up-to-date: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/cmake/auv_interfaces__rosidl_typesupport_cppExport.cmake
+-- Up-to-date: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/cmake/auv_interfaces__rosidl_typesupport_cppExport-noconfig.cmake
+-- Up-to-date: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/cmake/export_auv_interfaces__rosidl_generator_pyExport.cmake
+-- Up-to-date: /home/techsas/auv_ws/install/auv_interfaces/share/auv_interfaces/cmake/export_auv_interfaces__rosidl_generator_pyExport-noconfig.cmake

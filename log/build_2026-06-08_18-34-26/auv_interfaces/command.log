@@ -1,0 +1,4 @@
+Invoking command in '/home/techsas/auv_ws/build/auv_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/techsas/auv_ws/install/auv_pkg:/opt/ros/humble /usr/bin/cmake --build /home/techsas/auv_ws/build/auv_interfaces -- -j8 -l8
+Invoked command in '/home/techsas/auv_ws/build/auv_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/techsas/auv_ws/install/auv_pkg:/opt/ros/humble /usr/bin/cmake --build /home/techsas/auv_ws/build/auv_interfaces -- -j8 -l8
+Invoking command in '/home/techsas/auv_ws/build/auv_interfaces': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/techsas/auv_ws/install/auv_pkg:/opt/ros/humble /usr/bin/cmake --install /home/techsas/auv_ws/build/auv_interfaces
+Invoked command in '/home/techsas/auv_ws/build/auv_interfaces' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/techsas/auv_ws/install/auv_pkg:/opt/ros/humble /usr/bin/cmake --install /home/techsas/auv_ws/build/auv_interfaces

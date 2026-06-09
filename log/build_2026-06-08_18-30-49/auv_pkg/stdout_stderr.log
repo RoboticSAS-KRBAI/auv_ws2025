@@ -1,0 +1,43 @@
+running develop
+running egg_info
+writing auv_pkg.egg-info/PKG-INFO
+writing dependency_links to auv_pkg.egg-info/dependency_links.txt
+writing entry points to auv_pkg.egg-info/entry_points.txt
+writing requirements to auv_pkg.egg-info/requires.txt
+writing top-level names to auv_pkg.egg-info/top_level.txt
+reading manifest file 'auv_pkg.egg-info/SOURCES.txt'
+writing manifest file 'auv_pkg.egg-info/SOURCES.txt'
+running build_ext
+Creating /home/techsas/auv_ws/install/auv_pkg/lib/python3.10/site-packages/auv-pkg.egg-link (link to .)
+Installing accumulator script to /home/techsas/auv_ws/install/auv_pkg/lib/auv_pkg
+Installing accumulator_fadhil script to /home/techsas/auv_ws/install/auv_pkg/lib/auv_pkg
+Installing accumulator_new script to /home/techsas/auv_ws/install/auv_pkg/lib/auv_pkg
+Installing bucket_detection script to /home/techsas/auv_ws/install/auv_pkg/lib/auv_pkg
+Installing gui_timer script to /home/techsas/auv_ws/install/auv_pkg/lib/auv_pkg
+Installing guidance_flag1 script to /home/techsas/auv_ws/install/auv_pkg/lib/auv_pkg
+Installing guidance_flag2 script to /home/techsas/auv_ws/install/auv_pkg/lib/auv_pkg
+Installing guidance_flag3 script to /home/techsas/auv_ws/install/auv_pkg/lib/auv_pkg
+Installing guidance_flare_gate script to /home/techsas/auv_ws/install/auv_pkg/lib/auv_pkg
+Installing guidance_full_reynard script to /home/techsas/auv_ws/install/auv_pkg/lib/auv_pkg
+Installing guidance_full_reynard_v2 script to /home/techsas/auv_ws/install/auv_pkg/lib/auv_pkg
+Installing guidance_mission script to /home/techsas/auv_ws/install/auv_pkg/lib/auv_pkg
+Installing guidance_new script to /home/techsas/auv_ws/install/auv_pkg/lib/auv_pkg
+Installing guidance_orange_gate_bucket script to /home/techsas/auv_ws/install/auv_pkg/lib/auv_pkg
+Installing guidance_sauvc_fadhil script to /home/techsas/auv_ws/install/auv_pkg/lib/auv_pkg
+Installing guidance_sauvc_qualification script to /home/techsas/auv_ws/install/auv_pkg/lib/auv_pkg
+Installing guidance_teensy script to /home/techsas/auv_ws/install/auv_pkg/lib/auv_pkg
+Installing map_sauvc script to /home/techsas/auv_ws/install/auv_pkg/lib/auv_pkg
+Installing object_detection script to /home/techsas/auv_ws/install/auv_pkg/lib/auv_pkg
+Installing object_detection_new script to /home/techsas/auv_ws/install/auv_pkg/lib/auv_pkg
+Installing pid_logger_pub script to /home/techsas/auv_ws/install/auv_pkg/lib/auv_pkg
+Installing pub_teensy script to /home/techsas/auv_ws/install/auv_pkg/lib/auv_pkg
+Installing pub_teensy_serial_simple script to /home/techsas/auv_ws/install/auv_pkg/lib/auv_pkg
+Installing pub_yaw_only script to /home/techsas/auv_ws/install/auv_pkg/lib/auv_pkg
+Installing serial_monitoring_safety script to /home/techsas/auv_ws/install/auv_pkg/lib/auv_pkg
+Installing serial_monitoring_safety_and_bucket script to /home/techsas/auv_ws/install/auv_pkg/lib/auv_pkg
+Installing tes_gui script to /home/techsas/auv_ws/install/auv_pkg/lib/auv_pkg
+Installing tes_yaw_diff script to /home/techsas/auv_ws/install/auv_pkg/lib/auv_pkg
+Installing test_node script to /home/techsas/auv_ws/install/auv_pkg/lib/auv_pkg
+
+Installed /home/techsas/auv_ws/build/auv_pkg
+running symlink_data

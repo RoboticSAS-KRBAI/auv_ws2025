@@ -212,7 +212,7 @@ from rclpy.node import Node
 IMGSZ         = 640
 CONF_THRES    = 0.5
 CAM_DEVICE    = "/dev/video4"
-VIDEO_PATH    = "/home/techsas/auv_ws/src/auv_pkg/auv_pkg/vid/gate_lamp_kolam_cewe.mp4"
+VIDEO_PATH    = "/home/techsas/sauvc_dataset_atas1.mp4"
 # /home/techsas/auv_ws/src/auv_pkg/auv_pkg/vid/gate_lamp_kolam_cewe.mp4
 VIDEO_PATH2    = "/home/techsas/auv_ws/src/auv_pkg/auv_pkg/vid/blue_flare_lamp_kolam_cewe.mp4"
 
@@ -244,7 +244,9 @@ class ObjectDetectionNode(Node):
         self.get_logger().info("Loading TensorRT engine...")
 
         self.model = YOLO(
-            '/home/techsas/auv_ws/src/auv_pkg/pt/telkom12mei_best.engine',
+            # '/home/techsas/auv_ws/src/auv_pkg/pt/telkom12mei_best.engine',
+            # '/home/techsas/auv_ws/src/auv_pkg/pt/itb_with_negative_example.engine',
+            '/home/techsas/auv_ws/src/auv_pkg/pt/sauvc-final-best.engine',
             task='detect'
         )
 
@@ -253,14 +255,14 @@ class ObjectDetectionNode(Node):
         # ================= CAMERA =================
         self.get_logger().info(f"Opening camera: {CAM_DEVICE}")
 
-        # self.cap = cv2.VideoCapture(
-        #     CAM_DEVICE,
-        #     cv2.CAP_V4L2
-        # )
-
         self.cap = cv2.VideoCapture(
-            VIDEO_PATH
+            CAM_DEVICE,
+            cv2.CAP_V4L2
         )
+
+        # self.cap = cv2.VideoCapture(
+        #     VIDEO_PATH
+        # )
 
 
         if not self.cap.isOpened():
@@ -335,14 +337,14 @@ class ObjectDetectionNode(Node):
 
         time.sleep(1)
 
-        # self.cap = cv2.VideoCapture(
-        #     CAM_DEVICE,
-        #     cv2.CAP_V4L2
-        # )
-
         self.cap = cv2.VideoCapture(
-            VIDEO_PATH2
+            CAM_DEVICE,
+            cv2.CAP_V4L2
         )
+
+        # self.cap = cv2.VideoCapture(
+        #     VIDEO_PATH2
+        # )
 
         self.cap.set(
             cv2.CAP_PROP_FOURCC,

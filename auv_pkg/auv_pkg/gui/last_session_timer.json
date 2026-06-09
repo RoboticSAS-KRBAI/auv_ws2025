@@ -1,47 +1,47 @@
 {
-  "delay": "3",
+  "delay": "7",
   "rows": [
     {
       "status": "all",
-      "timer": "11",
-      "yaw": "268",
-      "depth": "-0.32"
+      "timer": "4",
+      "yaw": "226",
+      "depth": "0.5"
     },
     {
-      "status": "camera_sway_forward_right",
-      "timer": "3",
+      "status": "sway_right_forward",
+      "timer": "2",
       "yaw": "",
       "depth": ""
     },
     {
       "status": "all",
-      "timer": "1.5",
-      "yaw": "",
+      "timer": "10",
+      "yaw": "260",
       "depth": ""
     },
     {
       "status": "sway_left",
-      "timer": "1",
+      "timer": "2.8",
       "yaw": "",
       "depth": ""
     },
     {
       "status": "all",
-      "timer": "15",
-      "yaw": "262",
-      "depth": "0.1"
+      "timer": "20",
+      "yaw": "256",
+      "depth": "0.7"
     },
     {
       "status": "sway_right",
-      "timer": "5",
+      "timer": "2",
       "yaw": "",
       "depth": ""
     },
     {
-      "status": "all",
+      "status": "camera_slow",
       "timer": "3",
       "yaw": "",
-      "depth": "0"
+      "depth": "0.5"
     },
     {
       "status": "camera_slow",
@@ -51,21 +51,21 @@
     },
     {
       "status": "backward_yaw",
-      "timer": "25",
-      "yaw": "",
-      "depth": "-0.32"
-    },
-    {
-      "status": "stop",
-      "timer": "",
+      "timer": "1.5",
       "yaw": "",
       "depth": ""
     },
     {
-      "status": "stop",
-      "timer": "",
+      "status": "camera_slow",
+      "timer": "10",
       "yaw": "",
       "depth": ""
+    },
+    {
+      "status": "dpr_ssy",
+      "timer": "200",
+      "yaw": "",
+      "depth": "-1"
     },
     {
       "status": "stop",

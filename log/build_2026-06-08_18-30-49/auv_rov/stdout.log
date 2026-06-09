@@ -1,0 +1,14 @@
+running develop
+running egg_info
+writing auv_rov.egg-info/PKG-INFO
+writing dependency_links to auv_rov.egg-info/dependency_links.txt
+writing entry points to auv_rov.egg-info/entry_points.txt
+writing requirements to auv_rov.egg-info/requires.txt
+writing top-level names to auv_rov.egg-info/top_level.txt
+reading manifest file 'auv_rov.egg-info/SOURCES.txt'
+writing manifest file 'auv_rov.egg-info/SOURCES.txt'
+running build_ext
+Creating /home/techsas/auv_ws/install/auv_rov/lib/python3.10/site-packages/auv-rov.egg-link (link to .)
+
+Installed /home/techsas/auv_ws/build/auv_rov
+running symlink_data
